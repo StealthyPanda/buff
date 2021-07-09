@@ -11,6 +11,7 @@ public class World
 	public int timedelayinmillisecs = 1;
 
 	VelocityThread vt;
+	ForceThread ft;
 
 
 
@@ -18,6 +19,7 @@ public class World
 	{
 		origin = new Vector3();
 		vt = new VelocityThread(this);
+		ft = new ForceThread(this);
 		//leobjects = {};
 	}
 
@@ -25,12 +27,14 @@ public class World
 	{
 		origin = new Vector3();
 		vt = new VelocityThread(this);
+		ft = new ForceThread(this);
 		leobjects = prims;
 	}
 
 	public void startPhysics()
 	{
 		vt.start();
+		ft.start();
 	}
 }
 
@@ -78,5 +82,45 @@ class VelocityThread extends Thread
 
 		}
 		
+	}
+}
+
+class ForceThread extends Thread
+{
+	World targetworld;
+
+	long prevtime, currtime;
+
+	public ForceThread(World world)
+	{
+		targetworld = world;
+	}
+
+	public void run()
+	{
+
+		prevtime = System.nanoTime();
+
+		while (true)
+		{
+			
+			currtime = System.nanoTime();
+
+			if (targetworld.physics)
+			{
+
+				for (Primitive obj : targetworld.leobjects) 
+				{
+					if (obj == null) continue;
+					obj.velocity = Vector3.add(obj.velocity, obj.netforce.getMultiplied((1/obj.mass) * (currtime - prevtime) * Math.pow(10, -9)));	
+				}
+
+
+			}
+
+			prevtime = currtime;
+		}
+
+
 	}
 }

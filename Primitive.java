@@ -3,8 +3,8 @@ package buff;
 public class Primitive
 {
 	public volatile Vector3 position;
-	public Vector3 netforce, velocity;//somehow implement orientation
-	public double mass;
+	public volatile Vector3 netforce, velocity;//somehow implement orientation
+	public volatile double mass;
 
 	public Primitive()
 	{
