@@ -10,12 +10,14 @@ public class Primitive
 	{
 		this.position = new Vector3();
 		this.velocity = new Vector3();
+		this.netforce = new Vector3();
 	}
 
 	public Primitive(Vector3 position)
 	{
 		this.position = position;
 		this.velocity = new Vector3();
+		this.netforce = new Vector3();
 	}
 
 	public void moveTo(Vector3 destination)

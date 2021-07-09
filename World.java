@@ -7,27 +7,37 @@ public class World
 
 	public Primitive[] leobjects;
 	public Vector3 origin;
-	public volatile boolean physics = true, gravity = true;
+	public volatile boolean physics = true;
 	public int timedelayinmillisecs = 1;
+	public static final double gvalue = 9.8;
+	public volatile boolean gravity = false;
+
 
 	VelocityThread vt;
 	ForceThread ft;
+
+	AddGravityThread agt;
+	RemoveGravityThread rgt;
 
 
 
 	public World()
 	{
 		origin = new Vector3();
+
 		vt = new VelocityThread(this);
 		ft = new ForceThread(this);
+
 		//leobjects = {};
 	}
 
 	public World(Primitive[] prims)
 	{
 		origin = new Vector3();
+
 		vt = new VelocityThread(this);
 		ft = new ForceThread(this);
+
 		leobjects = prims;
 	}
 
@@ -35,6 +45,31 @@ public class World
 	{
 		vt.start();
 		ft.start();
+	}
+
+	public void startPhysics(boolean gravitydefault)
+	{
+		vt.start();
+		ft.start();
+		if (gravitydefault) agt.start();
+	}
+
+	public boolean startGravity()
+	{
+		if (!gravity) 
+		{
+			new AddGravityThread(this).start(); gravity = true; return true;
+		}
+		return false;
+	}
+
+	public boolean stopGravity()
+	{
+		if (gravity)
+		{
+			new RemoveGravityThread(this).start(); gravity = false; return true;
+		}
+		return false;
 	}
 }
 
@@ -121,6 +156,65 @@ class ForceThread extends Thread
 			prevtime = currtime;
 		}
 
+
+	}
+}
+
+class AddGravityThread extends Thread
+{
+
+	World targetworld;
+
+	public AddGravityThread(World world)
+	{
+
+		targetworld = world;
+
+	}
+
+	public void run()
+	{
+
+		targetworld.gravity = true;
+		//System.out.println("HEre boi");
+
+		for (Primitive obj : targetworld.leobjects) 
+		{
+
+			if (obj == null) continue;
+
+			obj.netforce = Vector3.add(obj.netforce, new Vector3(0, -1 * World.gvalue * obj.mass, 0));
+			
+		}
+
+	}
+}
+
+class RemoveGravityThread extends Thread
+{
+
+	World targetworld;
+
+	public RemoveGravityThread(World world)
+	{
+
+		targetworld = world;
+
+	}
+
+	public void run()
+	{
+
+		targetworld.gravity = false;
+
+		for (Primitive obj : targetworld.leobjects) 
+		{
+
+			if (obj == null) continue;
+
+			obj.netforce = Vector3.add(obj.netforce, new Vector3(0, 1 * World.gvalue * obj.mass, 0));
+			
+		}
 
 	}
 }
