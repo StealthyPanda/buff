@@ -1,4 +1,4 @@
-package messenger;
+package buff;
 import java.util.*;
 
 public class World
@@ -38,6 +38,10 @@ class VelocityThread extends Thread
 {
 	World targetworld;
 
+	long prevtime, currtime;
+
+	long bufftime;
+
 	int r = 0;
 
 	public VelocityThread(World world)
@@ -47,9 +51,11 @@ class VelocityThread extends Thread
 
 	public void run()
 	{
+		prevtime = System.nanoTime();
+		//bufftime = System.nanoTime();
 		while(true)
 		{
-
+			currtime = System.nanoTime();
 			if (targetworld.physics)
 			{
 				//System.out.print("Called "); System.out.print(r);
@@ -57,16 +63,18 @@ class VelocityThread extends Thread
 				{
 					if(obj == null) continue;
 					//System.out.println()
-					obj.move(obj.velocity.getMultiplied(targetworld.timedelayinmillisecs * 0.001));	
+					obj.move(obj.velocity.getMultiplied((currtime - prevtime) * Math.pow(10, -9)));	
 				}
 
 
 
 				//delayer.
-				try { Thread.sleep(targetworld.timedelayinmillisecs); } catch (Exception e) { System.out.println(e.getStackTrace()); }
+				//try { Thread.sleep(targetworld.timedelayinmillisecs); } catch (Exception e) { System.out.println(e.getStackTrace()); }
 
 				r++;
 			}
+			prevtime = currtime;
+			//bufftime = System.nanoTime();
 
 		}
 		

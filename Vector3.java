@@ -1,4 +1,4 @@
-package messenger;
+package buff;
 
 abstract class Vector
 {
