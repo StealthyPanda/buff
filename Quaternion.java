@@ -15,6 +15,12 @@ public class Quaternion
 
 	}
 
+	public Quaternion(Quaternion q)
+	{
+		this.w= q.w;
+		this.imaginarypart = q.imaginarypart;
+	}
+
 	public Quaternion(double w, double x, double y, double z)
 	{
 
@@ -36,10 +42,23 @@ public class Quaternion
 		return new Quaternion(q1.w + q2.w, Vector3.add(q1.imaginarypart, q2.imaginarypart));
 	}
 
-	public static Quaternion multiply(double val)
+	public Quaternion multiply(double val)
 	{
 		this.w *= val;
 		this.imaginarypart.multiply(val);
+		return this;
+	}
+
+	public Quaternion getMultiplied(double val)
+	{
+		return new Quaternion(this).multiply(val);
+	}
+
+	public static Quaternion multiply(Quaternion q1, Quaternion q2)
+	{
+
+		
+		
 	}
 
 }
