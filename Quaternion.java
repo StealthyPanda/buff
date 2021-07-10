@@ -62,6 +62,14 @@ public class Quaternion
 		return new Quaternion(this).multiply(val);
 	}
 
+	public double getMagnitude()
+	{
+		double mag = 0;
+		mag += (w*w) + (imaginarypart.x*imaginarypart.x) + (imaginarypart.y*imaginarypart.y) + (imaginarypart.z*imaginarypart.z);
+		mag = Math.pow(mag, 0.5);
+		return mag;
+	}
+
 	public static Quaternion multiply(Quaternion q1, Quaternion q2)
 	{
 
@@ -69,11 +77,21 @@ public class Quaternion
 		Quaternion w1vect = new Quaternion(q2.imaginarypart.getMultiplied(q1.w));
 		Quaternion w2vect = new Quaternion(q1.imaginarypart.getMultiplied(q2.w));
 		Quaternion vectproduct = new Quaternion(Vector3.dotproduct(q1.imaginarypart, q2.imaginarypart) * -1, Vector3.crossproduct(q1.imaginarypart, q2.imaginarypart));
-		
+
 		Quaternion finalproduct = Quaternion.add( Quaternion.add( Quaternion.add(pureconst, w1vect), w2vect ), vectproduct );
 
 		return finalproduct;
 		
+	}
+
+	public void normalise()
+	{
+		this.multiply(1/this.getMagnitude());
+	}
+
+	public Quaternion getNormalised()
+	{
+		return new Quaternion(this).multiply(1/this.getMagnitude());
 	}
 
 	public String toString()
