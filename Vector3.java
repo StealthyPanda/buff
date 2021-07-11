@@ -125,4 +125,42 @@ public class Vector3 extends Vector
 	{
 		return ((this.x == v.x) && (this.y == v.y) && (this.z == v.z));
 	}
+
+	public static double mod(double val)
+	{
+		if (val < 0) return -1*val;
+		return val;
+	}
+
+	/*public Vector3 getClean()
+	{
+		Vector3 retter = new Vector3(this);
+		//if (retter.w <= Math.pow(10, -15)) retter.w = 0;
+		if (mod(retter.x) <= Math.pow(10, -15)) retter.x = 0;
+		if (mod(retter.y) <= Math.pow(10, -15)) retter.y = 0;
+		if (mod(retter.z) <= Math.pow(10, -15)) retter.z = 0;
+		return retter;
+	}*/
+
+	public Vector3 clean()
+	{
+		this.x = (float) this.x;
+		this.y = (float) this.y;
+		this.z = (float) this.z;
+		return this;
+	}
+
+	public Vector3 getClean()
+	{
+		return new Vector3(this).clean();
+	}
+
+	public Vector3 rotate(Vector3 axis, double angleinradians)
+	{
+		Vector3 rotated = Quaternion.rotate(this, axis, angleinradians);
+		this.x = rotated.x;
+		this.y = rotated.y;
+		this.z = rotated.z;
+		return this;
+	}
 }

@@ -94,11 +94,60 @@ public class Quaternion
 		return new Quaternion(this).multiply(1/this.getMagnitude());
 	}
 
+	public Quaternion getConjugate()
+	{
+		return new Quaternion(this.w, this.imaginarypart.getMultiplied(-1));
+	}
+
+	public Vector3 getVector()
+	{
+		return new Vector3(this.imaginarypart);
+	}
+
+	public static double mod(double val)
+	{
+		if (val < 0) return -1*val;
+		return val;
+	}
+
+	/*public Quaternion getClean()
+	{
+		Quaternion retter = new Quaternion(this);
+		if (mod(retter.w) <= Math.pow(10, -15)) retter.w = 0;
+		if (mod(retter.imaginarypart.x) <= Math.pow(10, -15)) retter.imaginarypart.x = 0;
+		if (mod(retter.imaginarypart.y)<= Math.pow(10, -15)) retter.imaginarypart.y = 0;
+		if (mod(retter.imaginarypart.z) <= Math.pow(10, -15)) retter.imaginarypart.z = 0;
+		return retter;
+	}*/
+
+	public Quaternion clean()
+	{
+		this.w = (float) this.w;
+		this.imaginarypart.x = (float) this.imaginarypart.x;
+		this.imaginarypart.y = (float) this.imaginarypart.y;
+		this.imaginarypart.z = (float) this.imaginarypart.z;
+		return this;
+	}
+	public Quaternion getClean()
+	{
+		return new Quaternion(this).clean();
+	}
+
 	public String toString()
 	{
 		String retter = "";
 		retter += "(" + this.w + ", " + this.imaginarypart.x + ", " + this.imaginarypart.y + ", " + this.imaginarypart.z + ")";
 		return retter;
+	}
+
+	public static Vector3 rotate(Vector3 point, Vector3 axis, double angleinradians)
+	{
+		Vector3 rotated;
+		angleinradians = angleinradians/2;
+		Quaternion rotor = new Quaternion(Math.cos(angleinradians), axis.getMultiplied(Math.sin(angleinradians)));
+
+		rotated = Quaternion.multiply(Quaternion.multiply(rotor, new Quaternion(point)), rotor.getConjugate()).getVector();
+		return rotated;
 	}
 
 }
