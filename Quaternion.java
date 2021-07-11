@@ -144,7 +144,7 @@ public class Quaternion
 	{
 		Vector3 rotated;
 		angleinradians = angleinradians/2;
-		Quaternion rotor = new Quaternion(Math.cos(angleinradians), axis.getMultiplied(Math.sin(angleinradians)));
+		Quaternion rotor = new Quaternion(Math.cos(angleinradians), axis.getNormalised().getMultiplied(Math.sin(angleinradians)));
 
 		rotated = Quaternion.multiply(Quaternion.multiply(rotor, new Quaternion(point)), rotor.getConjugate()).getVector();
 		return rotated;

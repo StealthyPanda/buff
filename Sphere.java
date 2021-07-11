@@ -1,10 +1,16 @@
 package buff;
 
-public class Sphere
+class Shell
+{
+	public volatile Vector3 position, orientation;
+	public Vector3[] vertices;
+	public Plane[] faces;
+}
+
+public class Sphere extends Shell
 {
 
 	public double radius;
-	public volatile Vector3 position, orientation;
 
 	public Sphere()
 	{
@@ -17,7 +23,7 @@ public class Sphere
 	{
 		this.position = position;
 		this.radius = radius;
-		orientation = new Vector3(Vector3.xaxis);
+		this.orientation = new Vector3(Vector3.xaxis);
 	}
 
 	public Sphere(Vector3 position, double radius, Vector3 orientation)
@@ -27,7 +33,14 @@ public class Sphere
 		this.orientation = orientation;
 	}
 
-	
+	void populatevertices()
+	{
+
+
+
+	}
+
+
 
 
 }

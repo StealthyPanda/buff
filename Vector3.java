@@ -163,4 +163,9 @@ public class Vector3 extends Vector
 		this.z = rotated.z;
 		return this;
 	}
+
+	public static double boxProduct(Vector3 a, Vector3 b, Vector3 c)
+	{
+		return Vector3.dotproduct(Vector3.crossproduct(a, b), c);
+	}
 }
