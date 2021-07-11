@@ -150,4 +150,17 @@ public class Quaternion
 		return rotated;
 	}
 
+	public Quaternion getInverse()
+	{
+		return this.getConjugate().multiply(Math.pow(this.getMagnitude(), 2));
+	}
+
+	//returns the quaternion rotor that results in the orientation FROM (1, 0, 0) vector; 
+	public static Quaternion getQuaternion(Vector3 orientation)
+	{
+
+		
+
+	}
+
 }

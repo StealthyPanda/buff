@@ -10,6 +10,7 @@ public class Plane
 	public int[][] edges;
 	public boolean bounded = true;
 
+
 	public Plane(Vector3 a, Vector3 b, Vector3 c)
 	{
 		Vector3[] buff = {a, b, c}; this.vertices = buff;
@@ -18,6 +19,7 @@ public class Plane
 		normal = getNormal();
 	}
 
+	//NOTE: a,b,c,d must in a cyclic order other plane will be very fuqy
 	public Plane(Vector3 a, Vector3 b, Vector3 c, Vector3 d) throws NotCoplanarException
 	{
 		double box = Vector3.boxProduct(Vector3.add(b, a.getMultiplied(-1)), Vector3.add(c, a.getMultiplied(-1)), Vector3.add(d, a.getMultiplied(-1)));
