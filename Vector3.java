@@ -168,6 +168,15 @@ public class Vector3 extends Vector
 		return this;
 	}
 
+	public Vector3 rotate(Quaternion rotor)
+	{
+		Vector3 rotated = Quaternion.rotate(this, rotor);
+		this.x = rotated.x;
+		this.y = rotated.y;
+		this.z = rotated.z;
+		return this;
+	}
+
 	public static double boxProduct(Vector3 a, Vector3 b, Vector3 c)
 	{
 		return Vector3.dotproduct(Vector3.crossproduct(a, b), c);

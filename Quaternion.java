@@ -156,6 +156,13 @@ public class Quaternion
 	}
 
 	//returns the quaternion rotor that results in the orientation FROM (1, 0, 0) vector;
+
+	public static Quaternion getOrientation(Vector3 pointer)
+	{
+		return Quaternion.getQuaternion(new Vector3(1, 0, 0), pointer);
+	}
+
+
 	//IMPORTANT: MAKE SURE the vectors are at origin;
 	public static Quaternion getQuaternion(Vector3 currorientation, Vector3 finorientation)
 	{

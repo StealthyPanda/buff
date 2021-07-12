@@ -77,10 +77,31 @@ public class Cube extends Shell //which is in sphere.java
 			{
 				for (int bz = -1; bz <= 1; bz += 2) 
 				{
-					vertices[i] = new Vector3(bx, by, bz).multiply(sidelength/2); i++;
+					vertices[i] = Vector3.add(new Vector3(bx, by, bz).multiply(sidelength/2).rotate(orientation), this.position); i++;
 				}				
 			}
 		}
+
+		//translate(position);
+
+
+		Plane[] buffer = new Plane[10]; faces = buffer;
+
+		try
+		{
+			faces[0] = new Plane(vertices[0], vertices[1], vertices[2], vertices[3]);
+			faces[1] = new Plane(vertices[2], vertices[3], vertices[7], vertices[6]);
+			faces[2] = new Plane(vertices[6], vertices[7], vertices[5], vertices[4]);
+			faces[3] = new Plane(vertices[4], vertices[5], vertices[1], vertices[0]);
+			faces[4] = new Plane(vertices[1], vertices[3], vertices[7], vertices[5]);
+			faces[5] = new Plane(vertices[0], vertices[2], vertices[6], vertices[4]);
+		}
+		catch (NotCoplanarException e)
+		{
+			System.out.println("Couldn't generate cube.");
+		}
+
+
 
 	}
 

@@ -8,23 +8,24 @@ class Shell
 	public Plane[] faces;
 	public void translate(Vector3 movement)
 	{
-		for (Vector3 vertex : vertices) 
+		for (int i = 0; i < vertices.length; i++)
 		{
-			vertex = Vector3.add(vertex, movement);
+			vertices[i] = Vector3.add(vertices[i], movement);
 		}
 		position = Vector3.add(position, movement);
-		for (Plane face: faces) 
+		if (faces == null) return;
+		for (int i = 0; i < faces.length; i++) 
 		{
-			face.position = Vector3.add(position, movement);
+			faces[i].position = Vector3.add(faces[i].position, movement);
 		}
 	}
 
 	public void calculatePosition()
 	{
 		Vector3 buff = new Vector3();
-		for (Vector3 vertex: vertices) 
+		for (int i = 0; i < vertices.length; i++) 
 		{
-			buff = Vector3.add(buff, vertex);
+			buff = Vector3.add(buff, vertices[i]);
 		}
 		this.position = buff.multiply(1/vertices.length);
 	}
@@ -33,9 +34,20 @@ class Shell
 	{
 		calculatePosition();
 		Vector3 resettoorigin = this.position.getMultiplied(-1);
-		for (Vector3 vertex: vertices) 
+		for (int i = 0; i < vertices.length; i++) 
 		{
-			vertex = Quaternion.rotate(Vector3.add(vertex, resettoorigin), axis, angleinradians);
+			vertices[i] = Quaternion.rotate(Vector3.add(vertices[i], resettoorigin), axis, angleinradians);
+		}
+		translate(resettoorigin.getMultiplied(-1));
+	}
+
+	public void rotateLocal(Quaternion rotor)
+	{
+		calculatePosition();
+		Vector3 resettoorigin = this.position.getMultiplied(-1);
+		for (int i = 0; i < vertices.length; i++) 
+		{
+			vertices[i] = Quaternion.rotate(Vector3.add(vertices[i], resettoorigin), rotor);
 		}
 		translate(resettoorigin.getMultiplied(-1));
 	}
