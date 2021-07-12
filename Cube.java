@@ -9,7 +9,7 @@ public class Cube extends Shell //which is in sphere.java
 	{
 		this.sidelength = sidelength;
 		this.position = new Vector3();
-		this.orientation = new Vector3(1, 0, 0);
+		this.orientation = new Quaternion(1, 0, 0, 0);
 		populate();
 	}
 
@@ -17,11 +17,11 @@ public class Cube extends Shell //which is in sphere.java
 	{
 		this.sidelength = sidelength;
 		this.position = position;
-		this.orientation = new Vector3(1, 0, 0);
+		this.orientation = new Quaternion(1, 0, 0, 0);
 		populate();
 	}
 
-	public Cube(double sidelength, Vector3 position, Vector3 orientation)
+	public Cube(double sidelength, Vector3 position, Quaternion orientation)
 	{
 		this.sidelength = sidelength;
 		this.position = position;

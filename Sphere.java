@@ -2,7 +2,8 @@ package buff;
 
 class Shell
 {
-	public volatile Vector3 position, orientation;
+	public volatile Vector3 position;
+	public volatile Quaternion orientation;
 	public Vector3[] vertices;
 	public Plane[] faces;
 	public void translate(Vector3 movement)
@@ -49,17 +50,17 @@ public class Sphere extends Shell
 	{
 		radius = 1;
 		position = new Vector3();
-		orientation = new Vector3(Vector3.xaxis);
+		orientation = new Quaternion(1, 0, 0, 0);
 	}
 
 	public Sphere(Vector3 position, double radius)
 	{
 		this.position = position;
 		this.radius = radius;
-		this.orientation = new Vector3(Vector3.xaxis);
+		this.orientation = new Quaternion(1, 0, 0, 0);
 	}
 
-	public Sphere(Vector3 position, double radius, Vector3 orientation)
+	public Sphere(Vector3 position, double radius, Quaternion orientation)
 	{
 		this.position = position;
 		this.radius = radius;
