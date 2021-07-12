@@ -126,6 +126,10 @@ public class Quaternion
 		this.imaginarypart.x = (float) this.imaginarypart.x;
 		this.imaginarypart.y = (float) this.imaginarypart.y;
 		this.imaginarypart.z = (float) this.imaginarypart.z;
+		if (mod(this.w) <= Math.pow(10, -10)) this.w = 0;
+		if (mod(this.imaginarypart.x) <= Math.pow(10, -10)) this.imaginarypart.x = 0;
+		if (mod(this.imaginarypart.y) <= Math.pow(10, -10)) this.imaginarypart.y = 0;
+		if (mod(this.imaginarypart.z) <= Math.pow(10, -10)) this.imaginarypart.z = 0;
 		return this;
 	}
 	public Quaternion getClean()
@@ -160,6 +164,23 @@ public class Quaternion
 	public static Quaternion getOrientation(Vector3 pointer)
 	{
 		return Quaternion.getQuaternion(new Vector3(1, 0, 0), pointer);
+	}
+
+	public static Quaternion getRotor(Vector3 axis, double angleinradians)
+	{
+		return new Quaternion(Math.cos(angleinradians), axis.getNormalised().getMultiplied(Math.sin(angleinradians)));
+	}
+
+	//combined in the order rotor1 then rotor2
+	public static Quaternion combineRotations(Quaternion rotor1, Quaternion rotor2)
+	{
+		//Vector3 combinedresult = new Vector3(1, 0, 0).rotate(rotor1).rotate(rotor2);
+		return Quaternion.multiply(rotor1, rotor2);
+	}
+
+	public Vector3 getVectorOrientation()
+	{
+		return new Vector3(1, 0, 0).rotate(this);
 	}
 
 

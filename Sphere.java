@@ -13,15 +13,23 @@ class Shell
 			vertices[i] = Vector3.add(vertices[i], movement);
 		}
 		position = Vector3.add(position, movement);
-		if (faces == null) return;
-		for (int i = 0; i < faces.length; i++) 
+		//if (faces == null) return;
+		try
 		{
-			faces[i].position = Vector3.add(faces[i].position, movement);
+			for (int i = 0; i < faces.length; i++) 
+			{
+				faces[i].position = Vector3.add(faces[i].position, movement);
+			}
+		}
+		catch (NullPointerException e)
+		{
+			return;
 		}
 	}
 
 	public void calculatePosition()
 	{
+		if (this.vertices == null) return;
 		Vector3 buff = new Vector3();
 		for (int i = 0; i < vertices.length; i++) 
 		{
@@ -39,6 +47,7 @@ class Shell
 			vertices[i] = Quaternion.rotate(Vector3.add(vertices[i], resettoorigin), axis, angleinradians);
 		}
 		translate(resettoorigin.getMultiplied(-1));
+		this.orientation = Quaternion.multiply(this.orientation, Quaternion.getRotor(axis, angleinradians)).clean();
 	}
 
 	public void rotateLocal(Quaternion rotor)
@@ -50,6 +59,7 @@ class Shell
 			vertices[i] = Quaternion.rotate(Vector3.add(vertices[i], resettoorigin), rotor);
 		}
 		translate(resettoorigin.getMultiplied(-1));
+		this.orientation = Quaternion.multiply(this.orientation, rotor).clean();
 	}
 }
 

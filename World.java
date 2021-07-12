@@ -6,6 +6,9 @@ public class World
 	//private Vector3[] levects;
 
 	public Primitive[] leobjects;
+	public Shell[] shells;
+	public Shell[] rendergroup;
+	public Camera camera;
 	public Vector3 origin;
 	public volatile boolean physics = true;
 	public int timedelayinmillisecs = 1;
@@ -29,6 +32,7 @@ public class World
 		ft = new ForceThread(this);
 
 		//leobjects = {};
+		camera = new Camera(this);
 	}
 
 	public World(Primitive[] prims)
@@ -39,6 +43,8 @@ public class World
 		ft = new ForceThread(this);
 
 		leobjects = prims;
+
+		camera = new Camera(this);
 	}
 
 	public void startPhysics()

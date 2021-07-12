@@ -34,6 +34,7 @@ public class Plane
 		{
 			Vector3[] buff = {a, b, c, d}; this.vertices = buff;
 			position = Vector3.add(Vector3.add(a, b), Vector3.add(c, d)).getMultiplied(1/4);
+			//System.out.println("Idhar: " + position.toString());
 			int[][] buffedges = {{0,1}, {1,2}, {2,3}, {3,1}}; this.edges = buffedges;
 			normal = getNormal();
 		}
@@ -72,5 +73,41 @@ public class Plane
 	public Plane getUnbounded()
 	{
 		return new Plane(this.position, this.normal);
+	}
+
+	public void translate(Vector3 movement)
+	{
+		for (int i = 0; i < vertices.length; i++)
+		{
+			vertices[i] = Vector3.add(vertices[i], movement);
+		}
+		position = Vector3.add(position, movement);
+		//System.out.println("Inside out: " + position.toString());
+	}
+
+	public void rotateLocal(Vector3 axis, double angleinradians)
+	{
+		//calculatePosition();
+		Vector3 resettoorigin = this.position.getMultiplied(-1);
+		translate(resettoorigin);
+		for (int i = 0; i < vertices.length; i++) 
+		{
+			vertices[i] = Quaternion.rotate(vertices[i], axis, angleinradians);
+		}
+		this.normal = getNormal();
+		translate(resettoorigin.getMultiplied(-1));
+	}
+
+	public void rotateLocal(Quaternion rotor)
+	{
+		//calculatePosition();
+		Vector3 resettoorigin = this.position.getMultiplied(-1);
+		translate(resettoorigin);
+		for (int i = 0; i < vertices.length; i++) 
+		{
+			vertices[i] = Quaternion.rotate(vertices[i], rotor);
+		}
+		this.normal = getNormal();
+		translate(resettoorigin.getMultiplied(-1));
 	}
 }
