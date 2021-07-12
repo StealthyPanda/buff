@@ -9,6 +9,7 @@ public class Plane
 	public Vector3 position, normal;
 	public int[][] edges;
 	public boolean bounded = true;
+	public double area;
 
 
 	public Plane(Vector3 a, Vector3 b, Vector3 c)
@@ -52,6 +53,20 @@ public class Plane
 		Vector3 bminusa = Vector3.add(vertices[1], vertices[0].getMultiplied(-1));
 		Vector3 cminusa = Vector3.add(vertices[2], vertices[0].getMultiplied(-1));
 		return Vector3.crossproduct(bminusa, cminusa).normalise();
+	}
+
+	public double getArea()
+	{
+		double area = 0;
+
+		area += Vector3.mod(Vector3.crossproduct(Vector3.add(vertices[2], vertices[0].getMultiplied(-1)), Vector3.add(vertices[1], vertices[0].getMultiplied(-1))).getMagnitude()/2);
+
+		if (vertices.length == 4)
+		{
+			area += Vector3.mod(Vector3.crossproduct(Vector3.add(vertices[3], vertices[0].getMultiplied(-1)), Vector3.add(vertices[2], vertices[0].getMultiplied(-1))).getMagnitude()/2);
+		}
+
+		return area;
 	}
 
 	public Plane getUnbounded()
