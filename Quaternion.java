@@ -155,12 +155,24 @@ public class Quaternion
 		return this.getConjugate().multiply(Math.pow(this.getMagnitude(), 2));
 	}
 
-	//returns the quaternion rotor that results in the orientation FROM (1, 0, 0) vector; 
-	public static Quaternion getQuaternion(Vector3 orientation)
+	//returns the quaternion rotor that results in the orientation FROM (1, 0, 0) vector;
+	//IMPORTANT: MAKE SURE the vectors are at origin;
+	public static Quaternion getQuaternion(Vector3 currorientation, Vector3 finorientation)
 	{
 
-		
+		Vector3 delta = Vector3.add(finorientation, currorientation.getMultiplied(-1));
+		Vector3 axis = Vector3.crossproduct(delta, currorientation.getMultiplied(-1));
 
+		double angle = Math.acos((Vector3.dotproduct(finorientation, currorientation))/(finorientation.getMagnitude() * currorientation.getMagnitude()));
+		angle = angle/2;
+		Quaternion rotor = new Quaternion(Math.cos(angle), axis.getNormalised().getMultiplied(Math.sin(angle)));
+
+		return rotor;
+	}
+
+	public static Vector3 rotate(Vector3 point, Quaternion rotor)
+	{
+		return Quaternion.multiply(Quaternion.multiply(rotor, new Quaternion(point)), rotor.getConjugate()).getVector();
 	}
 
 }

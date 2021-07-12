@@ -3,7 +3,7 @@ package buff;
 abstract class Vector
 {
 
-	double x, y, z;
+	public double x, y, z;
 
 	abstract public double getMagnitude();
 	//abstract public double dotwith(Vector3 v);
@@ -144,9 +144,13 @@ public class Vector3 extends Vector
 
 	public Vector3 clean()
 	{
+		double threshhold = Math.pow(10, -9);
 		this.x = (float) this.x;
 		this.y = (float) this.y;
 		this.z = (float) this.z;
+		if (mod(this.x) <= threshhold) this.x = 0;
+		if (mod(this.y) <= threshhold) this.y = 0;
+		if (mod(this.z) <= threshhold) this.z = 0;
 		return this;
 	}
 
