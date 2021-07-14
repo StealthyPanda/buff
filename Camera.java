@@ -1,6 +1,9 @@
 package buff;
 
-import java.awt.Canvas;
+import java.awt.*;
+import java.awt.color.*;
+import javax.swing.JFrame;
+import java.awt.geom.*;
 
 public class Camera
 {
@@ -14,6 +17,7 @@ public class Camera
 	public float kvalue = 0.1f;
 	public volatile Frame frame;
 	public Vector3 sunlight;
+	public String renderpath = "C:\\Seema_Sep_20\\OneDrive\\Desktop\\touseef\\renderingthing\\";
 
 	void initiateLocalAxes()
 	{
@@ -275,7 +279,66 @@ public class Camera
 	public void captureFrame()
 	{
 
+		project();
+
+		JFrame viewer = new JFrame("Hope");
+
+		viewer.setSize(1600, 900);
+
+		Sketcher sketcher = new Sketcher(this.frame, this.renderpath);
+
+		sketcher.setSize(1600, 900);
+
+		viewer.add(sketcher);
+
+		viewer.setVisible(true);
+
+	}
+}
+
+
+class Sketcher extends Canvas
+{
+
+	Frame frame;
+	String renderpath;
+
+	public Sketcher(Frame frame, String renderpath)
+	{
+		this.frame = frame;
+	}
+
+	public void paint(Graphics g)
+	{
+		Graphics2D g2 = (Graphics2D) g;
+
+		setBackground(new Color(125, 220, 255));
+
+		//iterating over the blocks in frame
+		for (int i = 0; i < frame.index; i++) 
+		{
+			if (frame.blocks[i] == null) continue;
+			Block block = frame.blocks[i];
+			double[][] coordinates = block.projectedvertexcoordinates;
+			GeneralPath polygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD, coordinates.length);
+			polygon.moveTo(coordinates[0][0], coordinates[0][1]);
+
+			for (int j = 1; j < coordinates.length; j++) 
+			{
+				polygon.lineTo(coordinates[j][0], coordinates[j][1]);
+			}
+
+			polygon.closePath();
+
+			g2.draw(polygon);
+
+			g2.setPaint(new Color(block.material.r, block.material.g, block.material.b));
+
+			g2.fill(polygon);
+
+		}
 
 
 	}
+
 }
