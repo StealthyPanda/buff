@@ -11,8 +11,8 @@ class Shell
 
 	public Plane getFace(int[] vertexindices) throws NotCoplanarException
 	{
-		if (vertexindices.length == 3) return new Plane(vertices[vertexindices[0]], vertices[vertexindices[1]], vertices[vertexindices[2]]);
-		if (vertexindices.length == 4) return new Plane(vertices[vertexindices[0]], vertices[vertexindices[1]], vertices[vertexindices[2]], vertices[vertexindices[3]]);
+		if (vertexindices.length == 3) return new Plane(vertices[vertexindices[0]], vertices[vertexindices[1]], vertices[vertexindices[2]]).setMaterial(this.material);
+		if (vertexindices.length == 4) return new Plane(vertices[vertexindices[0]], vertices[vertexindices[1]], vertices[vertexindices[2]], vertices[vertexindices[3]]).setMaterial(this.material);
 		return null;
 	}
 

@@ -34,9 +34,9 @@ public class World
 		ft = new ForceThread(this);
 
 		//leobjects = {};
+		light = new Vector3(1, 1, -1);
 		camera = new Camera(this);
 
-		light = new Vector3(1, 1, -1);
 	}
 
 	public World(Primitive[] prims)
@@ -48,8 +48,8 @@ public class World
 
 		leobjects = prims;
 
-		camera = new Camera(this);
 		light = new Vector3(1, 1, -1);
+		camera = new Camera(this);
 	}
 
 	public void startPhysics()

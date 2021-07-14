@@ -78,6 +78,12 @@ public class Plane
 		return new Plane(this.position, this.normal);
 	}
 
+	public Plane setMaterial(Material material)
+	{
+		this.material = material;
+		return this;
+	}
+
 	public Vector3 calculatePosition()
 	{
 		Vector3 newposition = new Vector3();

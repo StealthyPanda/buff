@@ -76,7 +76,7 @@ public class Camera
 		//this.rendergroup = this.targetworld.rendergroup;
 		sensor = generateSensor();
 		initiateLocalAxes();
-		this.frame = new Frame(1);
+		this.frame = new Frame(100);
 		this.sunlight = targetworld.light;
 	}
 
@@ -88,7 +88,7 @@ public class Camera
 		this.rendergroup = this.targetworld.rendergroup;
 		sensor = generateSensor();
 		initiateLocalAxes();
-		this.frame = new Frame(1);
+		this.frame = new Frame(100);
 		this.sunlight = targetworld.light;
 	}
 
@@ -100,7 +100,7 @@ public class Camera
 		this.rendergroup = this.targetworld.rendergroup;
 		sensor = generateSensor();
 		initiateLocalAxes();
-		this.frame = new Frame(1);
+		this.frame = new Frame(100);
 		this.sunlight = targetworld.light;
 	}
 
@@ -112,7 +112,7 @@ public class Camera
 		this.rendergroup = this.targetworld.rendergroup;
 		sensor = generateSensor();
 		initiateLocalAxes();
-		this.frame = new Frame(1);
+		this.frame = new Frame(100);
 		this.sunlight = targetworld.light;
 	}
 
@@ -153,7 +153,7 @@ public class Camera
 		System.out.println();
 	}
 
-	public void projectOnFrame(Plane face)
+	/*public void projectOnFrame(Plane face)
 	{
 		Vector3 intersection;
 		double localxcoord = 0, localycoord = 0;
@@ -161,29 +161,111 @@ public class Camera
 		Ray ray;
 		Material mat;
 		Vector3 sunlightvect = this.sunlight.getMultiplied(-1);
+		double[][] projectedvertexcoordinates = new double[][face.vertices.length];
 
+		mat = face.material;
+		normalangle = Vector3.angle(face.normal, sunlightvect);
+		
 		for (int i = 0; i < face.vertices.length; i++) 
 		{
 			ray = new Ray(face.vertices[i], this.position);
 			intersection = ray.getIntersection();
 			localxcoord = Vector3.dotproduct(intersection, localx);
 			localycoord = Vector3.dotproduct(intersection, localy);
-			mat = face.material;
-			depth = ray.getMagnitude();
-			normalangle = Vector3.angle(face.normal, sunlightvect);
+			if (i == 0) 
+			{
+				depth = ray.getMagnitude();
+			}
+			else
+			{
+				if (ray.getMagnitude() < depth) depth = ray.getMagnitude();
+			}
 			double[] coordinates = {localx, localy};
+			projectedvertexcoordinates[i] = coordinates;
 			//todo: this.frame.addBlock(new Block(coordinates), )
 		}
 
+		this.frame.addBlock(new Block(projectedvertexcoordinates, mat, depth, normalangle));
 
 
+
+	}*/
+
+	public void projectOnFrame(Plane face)
+	{
+		Material material = face.material;
+		Vector3 sunlightvect = this.sunlight.getMultiplied(-1);
+		double normalangle = Vector3.angle(face.normal, sunlightvect);
+
+		double[][] projectedvertexcoordinates = new double[face.vertices.length][];
+		double depth = 0;
+		
+		Ray ray;
+		double localxcoord;
+		double localycoord;
+		Vector3 intersection;
+
+		for (int i = 0; i < face.vertices.length; i++) 
+		{
+			ray = new Ray(face.vertices[i], this.position);
+			intersection = ray.getIntersection(this.sensor);
+
+			if (intersection == null) continue;
+
+			localxcoord = Vector3.dotproduct(intersection, localx);
+			localycoord = Vector3.dotproduct(intersection, localy);
+
+			double[] localcoordinates = {localxcoord, localycoord};
+			projectedvertexcoordinates[i] = localcoordinates;
+
+			double raylength = Vector3.add(intersection, face.vertices[i].getMultiplied(-1)).getMagnitude();
+
+			if (i == 0)
+			{
+				depth = raylength;
+			}
+			else
+			{
+				if (raylength < depth) depth = raylength;
+			}
+		}
+
+		this.frame.addBlock(new Block(projectedvertexcoordinates, material, depth, normalangle));
+
+	}
+
+	void updateRendergroup()
+	{
+		this.rendergroup = targetworld.rendergroup;
 	}
 
 
 	public void project()
 	{
+		updateRendergroup();
+		//System.out.print("No. of rendergroup Objects: "); System.out.println(rendergroup.length);
+
 		for (int i = 0; i < rendergroup.length; i++) 
 		{
+			//System.out.println("Buh here tho");
+			//System.out.println(rendergroup[0]);
+			if(rendergroup[i] == null) continue;
+			
+			for (int j = 0; j < rendergroup[i].faces.length; j++) 
+			{
+				//System.out.println("reacher dere");
+				if (rendergroup[i].faces[j] == null) continue;
+
+				try
+				{
+					projectOnFrame(rendergroup[i].getFace(rendergroup[i].faces[j]));
+				}
+				catch (NotCoplanarException e)
+				{
+					System.out.println("Couldnt project on the frame.");
+				}
+
+			}
 			
 		}
 	}
@@ -195,41 +277,5 @@ public class Camera
 
 
 
-	}
-}
-
-class Block
-{
-
-	double[][] projectedvertexcoordinates;
-	Material material;
-	double depth;
-	double normalangle;
-
-	public Block(double[][] projectedvertexcoordinates, Material material, double depth, double normalangle)
-	{
-		this.projectedvertexcoordinates = projectedvertexcoordinates;
-		this.material = material;
-		this.depth = depth;
-		this.normalangle = normalangle;
-	}
-
-}
-
-class Frame
-{
-	Block[] blocks = null;
-	int index = 0;
-
-	public Frame(int numberofblocks)
-	{
-		Block[] buff = new Block[numberofblocks]; blocks = buff;
-	}
-
-	public void addBlock(Block block)
-	{
-		if (blocks == null) return;
-		blocks[index] = block;
-		index++;
 	}
 }
