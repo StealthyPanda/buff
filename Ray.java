@@ -11,6 +11,11 @@ public class Ray
 		this.direction = direction.getNormalised();
 	}
 
+	public static Ray getRay(Vector3 from, Vector3 to)
+	{
+		return new Ray(from, Vector3.add(to, from.getMultiplied(-1)).normalise());
+	}
+
 	public Vector3 getIntersection(Plane p)
 	{
 		double poi = (Vector3.dotproduct(p.position, p.normal) - Vector3.dotproduct(start, p.normal))/(Vector3.dotproduct(direction, p.normal));

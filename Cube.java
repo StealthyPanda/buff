@@ -85,7 +85,7 @@ public class Cube extends Shell //which is in sphere.java
 		//translate(position);
 
 
-		Plane[] buffer = new Plane[6]; faces = buffer;
+		/*Plane[] buffer = new Plane[6]; faces = buffer;
 
 		try
 		{
@@ -99,7 +99,14 @@ public class Cube extends Shell //which is in sphere.java
 		catch (NotCoplanarException e)
 		{
 			System.out.println("Couldn't generate cube.");
-		}
+		}*/
+
+		int[][] buff = { {0, 1, 2, 3},
+						 {2, 3, 7, 6},
+						 {6, 7, 5, 4},
+						 {4, 5, 1, 0},
+						 {1, 5, 7, 3},
+						 {0, 2, 6, 4} }; faces = buff;
 
 
 

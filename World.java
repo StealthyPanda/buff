@@ -8,6 +8,7 @@ public class World
 	public Primitive[] leobjects;
 	public Shell[] shells;
 	public Shell[] rendergroup;
+	public Plane[] rendergroupplanes;
 	public Camera camera;
 	public Vector3 origin;
 	public volatile boolean physics = true;

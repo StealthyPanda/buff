@@ -96,13 +96,13 @@ public class Vector3 extends Vector
 
 	public Vector3 normalise()
 	{
-		this.multiply(1/this.getMagnitude());
+		this.divide(this.getMagnitude());
 		return this;
 	}
 
 	public Vector3 getNormalised()
 	{
-		Vector3 normalised = new Vector3(this); normalised.multiply(1/normalised.getMagnitude());
+		Vector3 normalised = new Vector3(this); normalised.divide(normalised.getMagnitude());
 		return normalised;
 	}
 
@@ -217,5 +217,10 @@ public class Vector3 extends Vector
 	public static double boxProduct(Vector3 a, Vector3 b, Vector3 c)
 	{
 		return Vector3.dotproduct(Vector3.crossproduct(a, b), c);
+	}
+
+	public static double angle(Vector3 v1, Vector3 v2)
+	{
+		return Vector3.dotproduct(v1, v2)/(v1.getMagnitude() * v2.getMagnitude());
 	}
 }

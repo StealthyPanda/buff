@@ -10,7 +10,36 @@ public class Camera
 	public Shell[] rendergroup;
 	public volatile Plane sensor;
 	public float sensorwidth = 16, sensorheight = 9, sensordistance = 0.2f;
+	public Vector3 localx, localy;
 	public float kvalue = 0.1f;
+	public volatile Frame frame;
+
+	void initiateLocalAxes()
+	{
+		localx = new Vector3(0, -1, 0);
+		localy = new Vector3(0, 0, 1);
+
+		localx.rotate(orientation);
+		localy.rotate(orientation);
+	}
+
+	void updateLocalAxes(Vector3 axis, double angleinradians)
+	{
+		this.localx.rotate(axis, angleinradians);
+		this.localy.rotate(axis, angleinradians);
+	}
+
+	void updateLocalAxes(Quaternion rotor)
+	{
+		this.localx.rotate(rotor);
+		this.localy.rotate(rotor);
+	}
+
+	void updateLocalAxes()
+	{
+		this.localx = new Vector3(0, -1, 0).rotate(orientation);
+		this.localy = new Vector3(0, 0, 1).rotate(orientation);
+	}
 
 	Plane generateSensor()
 	{
@@ -45,6 +74,8 @@ public class Camera
 		//this.targetworld = targetworld;
 		//this.rendergroup = this.targetworld.rendergroup;
 		sensor = generateSensor();
+		initiateLocalAxes();
+		this.frame = new Frame(1);
 	}
 
 	public Camera(World targetworld)
@@ -54,6 +85,8 @@ public class Camera
 		this.targetworld = targetworld;
 		this.rendergroup = this.targetworld.rendergroup;
 		sensor = generateSensor();
+		initiateLocalAxes();
+		this.frame = new Frame(1);
 	}
 
 	public Camera(World targetworld, Vector3 position)
@@ -63,6 +96,8 @@ public class Camera
 		this.targetworld = targetworld;
 		this.rendergroup = this.targetworld.rendergroup;
 		sensor = generateSensor();
+		initiateLocalAxes();
+		this.frame = new Frame(1);
 	}
 
 	public Camera(World targetworld, Vector3 position, Quaternion orientation)
@@ -72,6 +107,8 @@ public class Camera
 		this.targetworld = targetworld;
 		this.rendergroup = this.targetworld.rendergroup;
 		sensor = generateSensor();
+		initiateLocalAxes();
+		this.frame = new Frame(1);
 	}
 
 	public void translate(Vector3 movement)
@@ -90,12 +127,14 @@ public class Camera
 	{
 		this.orientation = Quaternion.multiply(this.orientation, rotor);
 		this.sensor.rotateAbout(this.position, rotor);
+		updateLocalAxes(rotor);
 	}
 
 	public void rotateLocal(Vector3 axis, double angleinradians)
 	{
 		this.orientation = Quaternion.multiply(this.orientation, Quaternion.getRotor(axis, angleinradians));
 		this.sensor.rotateAbout(this.position, axis, angleinradians);
+		updateLocalAxes(axis, angleinradians);
 	}
 
 	public void printInfo()
@@ -109,6 +148,38 @@ public class Camera
 		System.out.println();
 	}
 
+	public void projectOnFrame(Plane face)
+	{
+		Vector3 intersection;
+		double localxcoord = 0, localycoord = 0;
+		double depth, normalangle;
+		Ray ray;
+		Material mat;
+
+		for (int i = 0; i < face.vertices.length; i++) 
+		{
+			ray = new Ray(face.vertices[i], this.position);
+			intersection = ray.getIntersection();
+			localxcoord = Vector3.dotproduct(intersection, localx);
+			localycoord = Vector3.dotproduct(intersection, localy);
+			mat = face.material;
+			depth = ray.getMagnitude();
+			normalangle = Vector3.angle(face.normal, light);
+		}
+
+
+
+	}
+
+
+	public void project()
+	{
+		for (int i = 0; i < rendergroup.length; i++) 
+		{
+			
+		}
+	}
+
 
 
 	public void captureFrame()
@@ -116,5 +187,41 @@ public class Camera
 
 
 
+	}
+}
+
+class Block
+{
+
+	double[][] projectedvertexcoordinates;
+	Material material;
+	double depth;
+	double opacity;
+
+	public Block(double[][] projectedvertexcoordinates, Material material, double depth, double opacity)
+	{
+		this.projectedvertexcoordinates = projectedvertexcoordinates;
+		this.material = material;
+		this.depth = depth;
+		this.opacity = opacity;
+	}
+
+}
+
+class Frame
+{
+	Block[] blocks = null;
+	int index = 0;
+
+	public Frame(int numberofblocks)
+	{
+		Block[] buff = new Block[numberofblocks]; blocks = buff;
+	}
+
+	public void addBlock(Block block)
+	{
+		if (blocks == null) return;
+		blocks[index] = block;
+		index++;
 	}
 }

@@ -3,13 +3,14 @@ package buff;
 public class Plane
 {
 
-	double threshhold = Math.pow(10, -10);
+	double threshhold = Math.pow(10, -7);
 
 	public Vector3[] vertices;
 	public Vector3 position, normal;
 	public int[][] edges;
 	public boolean bounded = true;
 	public double area;
+	public Material material;
 
 
 	public Plane(Vector3 a, Vector3 b, Vector3 c)
@@ -18,6 +19,7 @@ public class Plane
 		position = Vector3.add(Vector3.add(a, b), c).getMultiplied(1/3);
 		int[][] buffedges = {{0,1}, {1,2}, {2,0}}; this.edges = buffedges;
 		normal = getNormal();
+		material = new Material();
 	}
 
 	//NOTE: a,b,c,d must in a cyclic order other plane will be very fuqy
@@ -38,6 +40,7 @@ public class Plane
 			int[][] buffedges = {{0,1}, {1,2}, {2,3}, {3,1}}; this.edges = buffedges;
 			normal = getNormal();
 		}
+		material = new Material();
 	}
 
 	public Plane(Vector3 position, Vector3 normal)

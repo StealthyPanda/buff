@@ -5,7 +5,41 @@ class Shell
 	public volatile Vector3 position;
 	public volatile Quaternion orientation;
 	public Vector3[] vertices;
-	public Plane[] faces;
+	public int[][] faces;
+	public Material material;
+
+
+	public Plane getFace(int[] vertexindices) throws NotCoplanarException
+	{
+		if (vertexindices.length == 3) return new Plane(vertices[vertexindices[0]], vertices[vertexindices[1]], vertices[vertexindices[2]]);
+		if (vertexindices.length == 4) return new Plane(vertices[vertexindices[0]], vertices[vertexindices[1]], vertices[vertexindices[2]], vertices[vertexindices[3]]);
+		return null;
+	}
+
+	public Plane[] getAllFaces()
+	{
+		Plane[] allfaces = new Plane[faces.length];
+
+		for (int i = 0; i < faces.length ; i++) 
+		{
+			try
+			{
+				allfaces[i] = getFace(faces[i]);
+			}
+			catch (NotCoplanarException e)
+			{
+				System.out.println("Couldn't build the following face: ");
+				for (int x = 0; x < faces[i].length ; x++) 
+				{
+					System.out.println("-> " + vertices[faces[i][x]]);
+				}
+			}
+			
+		}
+
+		return allfaces;
+	}
+
 	public void translate(Vector3 movement)
 	{
 		for (int i = 0; i < vertices.length; i++)
@@ -14,17 +48,6 @@ class Shell
 		}
 		position = Vector3.add(position, movement);
 		//if (faces == null) return;
-		try
-		{
-			for (int i = 0; i < faces.length; i++) 
-			{
-				faces[i].position = Vector3.add(faces[i].position, movement);
-			}
-		}
-		catch (NullPointerException e)
-		{
-			return;
-		}
 	}
 
 	public void translateTo(Vector3 newposition)
