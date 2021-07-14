@@ -27,6 +27,15 @@ class Shell
 		}
 	}
 
+	public void translateTo(Vector3 newposition)
+	{
+		calculatePosition();
+		//System.out.println("current position = " + this.position.toString());
+		Vector3 movement = Vector3.add(newposition, this.position.getMultiplied(-1));
+		//System.out.println("movement = " + movement.toString());
+		translate(movement);
+	}
+
 	public void calculatePosition()
 	{
 		if (this.vertices == null) return;
@@ -35,7 +44,7 @@ class Shell
 		{
 			buff = Vector3.add(buff, vertices[i]);
 		}
-		this.position = buff.multiply(1/vertices.length);
+		this.position = buff.divide(vertices.length);
 	}
 
 	public void rotateLocal(Vector3 axis, double angleinradians)
@@ -60,6 +69,31 @@ class Shell
 		}
 		translate(resettoorigin.getMultiplied(-1));
 		this.orientation = Quaternion.multiply(this.orientation, rotor).clean();
+	}
+
+
+	public void rotateAbout(Vector3 pivot, Vector3 axis, double angleinradians)
+	{
+		
+		for (int i = 0; i < vertices.length; i++ ) 
+		{
+			vertices[i] = Quaternion.rotateAbout(vertices[i], pivot, axis, angleinradians);
+		}
+		this.position.rotateAbout(pivot, axis, angleinradians);
+		//this.normal = getNormal();
+		this.orientation = Quaternion.multiply(this.orientation, Quaternion.getRotor(axis, angleinradians));
+
+	}
+
+	public void rotateAbout(Vector3 pivot, Quaternion rotor)
+	{
+		
+		for (int i = 0; i < vertices.length; i++ ) 
+		{
+			vertices[i] = Quaternion.rotateAbout(vertices[i], pivot, rotor);
+		}
+		this.position.rotateAbout(pivot, rotor);
+		this.orientation = Quaternion.multiply(this.orientation, rotor);
 	}
 }
 

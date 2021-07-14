@@ -85,7 +85,7 @@ public class Cube extends Shell //which is in sphere.java
 		//translate(position);
 
 
-		Plane[] buffer = new Plane[10]; faces = buffer;
+		Plane[] buffer = new Plane[6]; faces = buffer;
 
 		try
 		{
@@ -93,7 +93,7 @@ public class Cube extends Shell //which is in sphere.java
 			faces[1] = new Plane(vertices[2], vertices[3], vertices[7], vertices[6]);
 			faces[2] = new Plane(vertices[6], vertices[7], vertices[5], vertices[4]);
 			faces[3] = new Plane(vertices[4], vertices[5], vertices[1], vertices[0]);
-			faces[4] = new Plane(vertices[1], vertices[3], vertices[7], vertices[5]);
+			faces[4] = new Plane(vertices[1], vertices[5], vertices[7], vertices[3]);
 			faces[5] = new Plane(vertices[0], vertices[2], vertices[6], vertices[4]);
 		}
 		catch (NotCoplanarException e)

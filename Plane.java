@@ -75,14 +75,36 @@ public class Plane
 		return new Plane(this.position, this.normal);
 	}
 
+	public Vector3 calculatePosition()
+	{
+		Vector3 newposition = new Vector3();
+
+		for (int i = 0; i < vertices.length; i++)
+		{
+			newposition = Vector3.add(newposition, vertices[i]);
+		}
+
+		return newposition.divide(vertices.length);
+	}
+
 	public void translate(Vector3 movement)
 	{
 		for (int i = 0; i < vertices.length; i++)
 		{
 			vertices[i] = Vector3.add(vertices[i], movement);
 		}
-		position = Vector3.add(position, movement);
+		//position = Vector3.add(Vector3.add(vertices[0], vertices[1]), Vector3.add(vertices[2], vertices[3])).getMultiplied(1/4);
+		this.position = calculatePosition();
 		//System.out.println("Inside out: " + position.toString());
+	}
+
+	public void translateTo(Vector3 newposition)
+	{
+		this.position = calculatePosition();
+		//System.out.println("current position = " + this.position.toString());
+		Vector3 movement = Vector3.add(newposition, this.position.getMultiplied(-1));
+		//System.out.println("movement = " + movement.toString());
+		translate(movement);
 	}
 
 	public void rotateLocal(Vector3 axis, double angleinradians)
@@ -110,4 +132,32 @@ public class Plane
 		this.normal = getNormal();
 		translate(resettoorigin.getMultiplied(-1));
 	}
+
+	public void rotateAbout(Vector3 pivot, Vector3 axis, double angleinradians)
+	{
+		
+		for (int i = 0; i < vertices.length; i++ ) 
+		{
+			vertices[i] = Quaternion.rotateAbout(vertices[i], pivot, axis, angleinradians);
+		}
+		this.position = calculatePosition();
+		this.normal = getNormal();
+
+	}
+
+	public void rotateAbout(Vector3 pivot, Quaternion rotor)
+	{
+		
+		for (int i = 0; i < vertices.length; i++ ) 
+		{
+			vertices[i] = Quaternion.rotateAbout(vertices[i], pivot, rotor);
+		}
+		this.position = calculatePosition();
+		this.normal = getNormal();
+
+	}
+
+	
+
+	//public void rotateTo(Vector3)
 }

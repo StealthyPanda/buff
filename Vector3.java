@@ -66,8 +66,23 @@ public class Vector3 extends Vector
 		return this;
 	}
 
+	public Vector3 divide(double factor)
+	{
+		factor = Math.pow(factor, -1);
+		this.x = this.x * factor;
+		this.y = this.y * factor;
+		this.z = this.z * factor;
+		return this;
+	}
+
 	public Vector3 getMultiplied(double factor)
 	{
+		return new Vector3(this).multiply(factor);
+	}
+
+	public Vector3 getDivided(double factor)
+	{
+		factor = Math.pow(factor, -1);
 		return new Vector3(this).multiply(factor);
 	}
 
@@ -144,7 +159,7 @@ public class Vector3 extends Vector
 
 	public Vector3 clean()
 	{
-		double threshhold = Math.pow(10, -9);
+		double threshhold = Math.pow(10, -7);
 		this.x = (float) this.x;
 		this.y = (float) this.y;
 		this.z = (float) this.z;
@@ -175,6 +190,28 @@ public class Vector3 extends Vector
 		this.y = rotated.y;
 		this.z = rotated.z;
 		return this;
+	}
+
+	public Vector3 rotateAbout(Vector3 pivot, Vector3 axis, double angleinradians)
+	{
+
+		Vector3 rotated = Quaternion.rotateAbout(this, pivot, axis, angleinradians);
+		this.x = rotated.x;
+		this.y = rotated.y;
+		this.z = rotated.z;
+		return this;
+
+	}
+
+	public Vector3 rotateAbout(Vector3 pivot, Quaternion rotor)
+	{
+
+		Vector3 rotated = Quaternion.rotateAbout(this, pivot, rotor);
+		this.x = rotated.x;
+		this.y = rotated.y;
+		this.z = rotated.z;
+		return this;
+
 	}
 
 	public static double boxProduct(Vector3 a, Vector3 b, Vector3 c)

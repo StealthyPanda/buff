@@ -71,18 +71,22 @@ public class Camera
 		this.sensor.translate(movement);
 	}
 
-
+	public void translateTo(Vector3 destination)
+	{
+		Vector3 movement = Vector3.add(destination, this.position.getMultiplied(-1));
+		translate(movement);
+	}
 
 	public void rotateLocal(Quaternion rotor)
 	{
 		this.orientation = Quaternion.multiply(this.orientation, rotor);
-		sensor.rotateLocal(rotor);
+		this.sensor.rotateAbout(this.position, rotor);
 	}
 
 	public void rotateLocal(Vector3 axis, double angleinradians)
 	{
 		this.orientation = Quaternion.multiply(this.orientation, Quaternion.getRotor(axis, angleinradians));
-		sensor.rotateLocal(axis, angleinradians);
+		this.sensor.rotateAbout(this.position, axis, angleinradians);
 	}
 
 

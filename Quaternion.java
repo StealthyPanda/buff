@@ -168,7 +168,7 @@ public class Quaternion
 
 	public static Quaternion getRotor(Vector3 axis, double angleinradians)
 	{
-		return new Quaternion(Math.cos(angleinradians), axis.getNormalised().getMultiplied(Math.sin(angleinradians)));
+		return new Quaternion(Math.cos(angleinradians/2), axis.getNormalised().getMultiplied(Math.sin(angleinradians/2)));
 	}
 
 	//combined in the order rotor1 then rotor2
@@ -201,6 +201,16 @@ public class Quaternion
 	public static Vector3 rotate(Vector3 point, Quaternion rotor)
 	{
 		return Quaternion.multiply(Quaternion.multiply(rotor, new Quaternion(point)), rotor.getConjugate()).getVector();
+	}
+
+	public static Vector3 rotateAbout(Vector3 point, Vector3 pivot, Vector3 axis, double angleinradians)
+	{
+		return Vector3.add(pivot, Quaternion.rotate(Vector3.add(point, pivot.getMultiplied(-1)), axis, angleinradians));
+	}
+
+	public static Vector3 rotateAbout(Vector3 point, Vector3 pivot, Quaternion rotor)
+	{
+		return Vector3.add(pivot, Quaternion.rotate(Vector3.add(point, pivot.getMultiplied(-1)), rotor));
 	}
 
 }
