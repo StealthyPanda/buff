@@ -13,6 +13,7 @@ public class Camera
 	public Vector3 localx, localy;
 	public float kvalue = 0.1f;
 	public volatile Frame frame;
+	public Vector3 sunlight;
 
 	void initiateLocalAxes()
 	{
@@ -76,6 +77,7 @@ public class Camera
 		sensor = generateSensor();
 		initiateLocalAxes();
 		this.frame = new Frame(1);
+		this.sunlight = targetworld.light;
 	}
 
 	public Camera(World targetworld)
@@ -87,6 +89,7 @@ public class Camera
 		sensor = generateSensor();
 		initiateLocalAxes();
 		this.frame = new Frame(1);
+		this.sunlight = targetworld.light;
 	}
 
 	public Camera(World targetworld, Vector3 position)
@@ -98,6 +101,7 @@ public class Camera
 		sensor = generateSensor();
 		initiateLocalAxes();
 		this.frame = new Frame(1);
+		this.sunlight = targetworld.light;
 	}
 
 	public Camera(World targetworld, Vector3 position, Quaternion orientation)
@@ -109,6 +113,7 @@ public class Camera
 		sensor = generateSensor();
 		initiateLocalAxes();
 		this.frame = new Frame(1);
+		this.sunlight = targetworld.light;
 	}
 
 	public void translate(Vector3 movement)
@@ -155,6 +160,7 @@ public class Camera
 		double depth, normalangle;
 		Ray ray;
 		Material mat;
+		Vector3 sunlightvect = this.sunlight.getMultiplied(-1);
 
 		for (int i = 0; i < face.vertices.length; i++) 
 		{
@@ -164,7 +170,9 @@ public class Camera
 			localycoord = Vector3.dotproduct(intersection, localy);
 			mat = face.material;
 			depth = ray.getMagnitude();
-			normalangle = Vector3.angle(face.normal, light);
+			normalangle = Vector3.angle(face.normal, sunlightvect);
+			double[] coordinates = {localx, localy};
+			//todo: this.frame.addBlock(new Block(coordinates), )
 		}
 
 
@@ -196,14 +204,14 @@ class Block
 	double[][] projectedvertexcoordinates;
 	Material material;
 	double depth;
-	double opacity;
+	double normalangle;
 
-	public Block(double[][] projectedvertexcoordinates, Material material, double depth, double opacity)
+	public Block(double[][] projectedvertexcoordinates, Material material, double depth, double normalangle)
 	{
 		this.projectedvertexcoordinates = projectedvertexcoordinates;
 		this.material = material;
 		this.depth = depth;
-		this.opacity = opacity;
+		this.normalangle = normalangle;
 	}
 
 }

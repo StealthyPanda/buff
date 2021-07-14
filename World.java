@@ -15,6 +15,7 @@ public class World
 	public int timedelayinmillisecs = 1;
 	public static final double gvalue = 9.8;
 	public volatile boolean gravity = false;
+	public Vector3 light; //sunlight
 
 
 	VelocityThread vt;
@@ -34,6 +35,8 @@ public class World
 
 		//leobjects = {};
 		camera = new Camera(this);
+
+		light = new Vector3(1, 1, -1);
 	}
 
 	public World(Primitive[] prims)
@@ -46,6 +49,7 @@ public class World
 		leobjects = prims;
 
 		camera = new Camera(this);
+		light = new Vector3(1, 1, -1);
 	}
 
 	public void startPhysics()
@@ -79,6 +83,7 @@ public class World
 		return false;
 	}
 }
+
 
 class VelocityThread extends Thread
 {
