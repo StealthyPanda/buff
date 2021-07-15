@@ -5,6 +5,13 @@ import java.awt.color.*;
 import javax.swing.JFrame;
 import java.awt.geom.*;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.awt.image.*;
+import java.io.*;
+import javax.imageio.ImageIO;
+
 
 public class Camera
 {
@@ -18,7 +25,7 @@ public class Camera
 	public double kvalue = 0.1f;
 	public volatile Frame frame;
 	public Vector3 sunlight;
-	public String renderpath = "C:\\Seema_Sep_20\\OneDrive\\Desktop\\touseef\\renderingthing\\";
+	public String renderpath = "C:\\Seema_Sep_20\\OneDrive\\Desktop\\touseef\\renderingthing";
 
 	void initiateLocalAxes()
 	{
@@ -158,43 +165,7 @@ public class Camera
 		System.out.println();
 	}
 
-	/*public void projectOnFrame(Plane face)
-	{
-		Vector3 intersection;
-		double localxcoord = 0, localycoord = 0;
-		double depth, normalangle;
-		Ray ray;
-		Material mat;
-		Vector3 sunlightvect = this.sunlight.getMultiplied(-1);
-		double[][] projectedvertexcoordinates = new double[][face.vertices.length];
-
-		mat = face.material;
-		normalangle = Vector3.angle(face.normal, sunlightvect);
-		
-		for (int i = 0; i < face.vertices.length; i++) 
-		{
-			ray = new Ray(face.vertices[i], this.position);
-			intersection = ray.getIntersection();
-			localxcoord = Vector3.dotproduct(intersection, localx);
-			localycoord = Vector3.dotproduct(intersection, localy);
-			if (i == 0) 
-			{
-				depth = ray.getMagnitude();
-			}
-			else
-			{
-				if (ray.getMagnitude() < depth) depth = ray.getMagnitude();
-			}
-			double[] coordinates = {localx, localy};
-			projectedvertexcoordinates[i] = coordinates;
-			//todo: this.frame.addBlock(new Block(coordinates), )
-		}
-
-		this.frame.addBlock(new Block(projectedvertexcoordinates, mat, depth, normalangle));
-
-
-
-	}*/
+	
 
 	public void projectOnFrame(Plane face)
 	{
@@ -295,169 +266,23 @@ public class Camera
 		System.out.println();
 	}
 
-	/*public static Block[] quickSortBlocks(Block[] blocks)
-	{
-
-		if (blocks.length == 1) return blocks;
-		if (blocks.length == 2)
-		{
-			if (blocks[0].depth < blocks[1].depth) return blocks;
-			else return reverse(blocks);
-		}
-
-
-		Block pivot = null;
-		Block[] buffer = new Block[blocks.length];
-
-		int prior = 0, after = 1, pivotindex = 0;
-
-		if (blocks.length % 2 == 0)
-		{
-			pivotindex = (blocks.length/2)-1;
-			pivot = blocks[pivotindex];
-		}
-		else
-		{
-			pivotindex = (blocks.length-1)/2;
-			pivot = blocks[pivotindex];
-		}
-
-		System.out.print("Bruh: ");
-		System.out.println(pivotindex);
-		System.out.println(pivot.depth);
-
-
-		System.out.println("This one:");
-		printBlocks(blocks);
-		buffer[++pivotindex] = pivot;
-		for (int i = 0; i < blocks.length; i++) 
-		{
-			if (blocks[i].depth < pivot.depth)
-			{
-				buffer[prior] = blocks[i];
-				prior++;
-			}
-			printBlocks(buffer);
-			if (blocks[i].depth > pivot.depth)
-			{
-				buffer[pivotindex + after] = blocks[i];
-				after++;
-			}
-		}
-
-
-		
-		//String nullstring = null;
-
-		System.out.println("Buffer: ");
-		printBlocks(buffer);
-
-
-
-		if (isSorted(buffer)) return buffer;
-
-		Block[] joined = new Block[blocks.length];
-
-		joined[pivotindex] = pivot;
-
-		Block[] firstpart = quickSortBlocks(Arrays.copyOfRange(buffer, 0, pivotindex));
-		Block[] secondpart = quickSortBlocks(Arrays.copyOfRange(buffer, pivotindex + 1, blocks.length));
-
-		for (int i = 0; i < firstpart.length; i++) 
-		{
-			joined[i] = firstpart[i];
-		}
-
-		for (int i = 0; i < secondpart.length; i++) 
-		{
-			joined[pivotindex + i + 1] = secondpart[i];
-		}
-
-		return joined;
-		//return blocks;
-
-	}*/
-
+	
 	public static Block[] quickSortBlocks(Block[] blocks)
-	{
-		//System.out.println("Received: ");
-		//printBlocks(blocks);
-		if (blocks.length == 1) return blocks;
-		if (blocks.length == 2)
+	{	
+		ArrayList<Block> buffer = new ArrayList<Block>();
+		for (int i = 0; i < blocks.length ; i++) 
 		{
-			if (isSorted(blocks)) return blocks;
-			return reverse(blocks);
+			buffer.add(blocks[i]);
 		}
-
-		int pivotindex = 0, prior = 0, after = 0;
-		Block pivot = null;
-
-		if (blocks.length % 2 == 0)
-		{
-			pivotindex = (blocks.length/2) - 1;
-			pivot = blocks[pivotindex];
-		}
-		else
-		{
-			pivotindex = (blocks.length-1)/2;
-			pivot = blocks[pivotindex];
-		}
-		//System.out.print("Pivot: ");
-		//System.out.println(pivot.depth);
-
-
-		Block[] buffer = new Block[blocks.length];
-
-		//buffer[pivotindex] = 
+		Collections.sort(buffer, new BlockComparor());
 		for (int i = 0; i < blocks.length; i++) 
 		{
-			if (blocks[i].depth < pivot.depth)
-			{
-				buffer[prior] = blocks[i];
-				prior++;
-			}
+			blocks[i] = buffer.get(i);
 		}
-		buffer[prior] = pivot;
-		pivotindex = prior;
-		prior++;
-		for (int i = 0; i < blocks.length; i++) 
-		{
-			if (blocks[i].depth > pivot.depth)
-			{
-				buffer[prior] = blocks[i];
-				prior++;
-			}
-		}
-
-		//printBlocks(buffer);
-		//System.out.println(pivotindex);
-
-
-		if (isSorted(buffer)) return buffer;
-
-		Block[] firstpart = quickSortBlocks(Arrays.copyOfRange(buffer, 0, pivotindex));
-		Block[] secondpart = quickSortBlocks(Arrays.copyOfRange(buffer, pivotindex + 1, buffer.length));
-
-
-		for (int i = 0; i < firstpart.length; i++) 
-		{
-			buffer[i] = firstpart[i];
-		}
-		for (int i = 0; i < secondpart.length; i++) 
-		{
-			buffer[firstpart.length + i] = secondpart[i];
-		}
-
-
-		return buffer;
+		return blocks;
 	}
 
-	void sortBlocks()
-	{
-		//Frame buff = new Frame(100);
-
-	}
-
+	
 
 	public void project()
 	{
@@ -488,7 +313,9 @@ public class Camera
 			
 		}
 
-		sortBlocks();
+		this.frame.blocks = Arrays.copyOfRange(this.frame.blocks, 0, this.frame.index);
+
+		quickSortBlocks(this.frame.blocks);
 	}
 
 	Sketcher sketcher;
@@ -512,25 +339,7 @@ public class Camera
 
 		viewer.setVisible(true);
 
-		/*System.out.println(this.frame.index);
-		for (int i = 0; i < this.frame.index; i++) 
-		{
-			System.out.println(this.frame.blocks[i]);
-			System.out.println(this.frame.blocks[i].projectedvertexcoordinates.length);
-			for (int j = 0 ; j < this.frame.blocks[i].projectedvertexcoordinates.length; j++) 
-			{
-				System.out.println(this.frame.blocks[i].projectedvertexcoordinates[j]);
-			}
-		}
-		for (int i = 0; i < this.frame.index; i++) 
-		{
-			for (int j = 0; j < this.frame.blocks[i].projectedvertexcoordinates.length; j++) 
-			{
-				System.out.print(this.frame.blocks[i].projectedvertexcoordinates[j][0]);
-				System.out.print(" ");
-				System.out.println(this.frame.blocks[i].projectedvertexcoordinates[j][1]);
-			}
-		}*/
+		
 
 	}
 
@@ -539,6 +348,15 @@ public class Camera
 		project();
 		sketcher.update();
 		sketcher.repaint();
+	}
+
+	public void savepic(String filename)
+	{
+
+		String filepath = this.renderpath + "\\" + filename + ".png";
+
+		sketcher.savepic(filepath);
+
 	}
 }
 
@@ -613,6 +431,38 @@ class Sketcher extends Canvas
 		}
 
 
+	}
+
+	public void savepic(String imageName)
+	{
+		BufferedImage image = new  BufferedImage(getWidth(), getHeight(),BufferedImage.TYPE_INT_RGB);
+	    Graphics2D graphics = image.createGraphics();
+	    paint(graphics);
+	    //graphics.dispose();
+	    FileOutputStream out;
+	    try {
+	        System.out.println("Exporting image: "+imageName);
+	        out = new FileOutputStream(imageName);
+	        ImageIO.write(image, "png", out);
+	        out.close();
+	    } catch (FileNotFoundException e) {
+	        e.printStackTrace();
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    } 
+	}
+
+}
+
+
+class BlockComparor implements Comparator<Block>
+{
+
+	public int compare(Block a, Block b)
+	{
+		if ((a.depth - b.depth) >= 0) return -1;
+		if ((a.depth - b.depth) < 0) return 1;
+		return 0;
 	}
 
 }
