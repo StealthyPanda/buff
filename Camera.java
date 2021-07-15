@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.color.*;
 import javax.swing.JFrame;
 import java.awt.geom.*;
+import java.util.Arrays;
 
 public class Camera
 {
@@ -247,9 +248,214 @@ public class Camera
 		this.rendergroup = targetworld.rendergroup;
 	}
 
-	void sortBlocks();
+	double getLowestDepthBlock(Block[] blocks)
 	{
-		//todo: Frame buff = new Frame(100);
+		double lowestdepth = 0;
+		for (int i = 0; i < blocks.length; i++) 
+		{
+
+			if (i == 0) lowestdepth = blocks[i].depth;
+			if (blocks[i].depth < lowestdepth) lowestdepth = blocks[i].depth;
+			
+		}
+		return lowestdepth;
+	}
+
+	public static boolean isSorted(Block[] blocks)
+	{
+		for (int i = 1; i < blocks.length; i++) 
+		{
+			if (blocks[i].depth < blocks[i-1].depth) return false;
+		}
+		return true;
+	}
+
+	public static Block[] reverse(Block[] blocks)
+	{
+		Block[] buffer = new Block[blocks.length];
+		for (int i = 0; i < blocks.length; i++) 
+		{
+			buffer[blocks.length - i - 1] = blocks[i];
+		}
+		return buffer;
+	}
+
+	public static void printBlocks(Block[] blocks)
+	{
+		System.out.println();
+		for (int i = 0; i < blocks.length; i++)
+		{
+			if (blocks[i] == null)
+			{
+				System.out.println("NULL");
+				continue;
+			}
+			System.out.println(blocks[i].depth);
+		}
+		System.out.println();
+	}
+
+	/*public static Block[] quickSortBlocks(Block[] blocks)
+	{
+
+		if (blocks.length == 1) return blocks;
+		if (blocks.length == 2)
+		{
+			if (blocks[0].depth < blocks[1].depth) return blocks;
+			else return reverse(blocks);
+		}
+
+
+		Block pivot = null;
+		Block[] buffer = new Block[blocks.length];
+
+		int prior = 0, after = 1, pivotindex = 0;
+
+		if (blocks.length % 2 == 0)
+		{
+			pivotindex = (blocks.length/2)-1;
+			pivot = blocks[pivotindex];
+		}
+		else
+		{
+			pivotindex = (blocks.length-1)/2;
+			pivot = blocks[pivotindex];
+		}
+
+		System.out.print("Bruh: ");
+		System.out.println(pivotindex);
+		System.out.println(pivot.depth);
+
+
+		System.out.println("This one:");
+		printBlocks(blocks);
+		buffer[++pivotindex] = pivot;
+		for (int i = 0; i < blocks.length; i++) 
+		{
+			if (blocks[i].depth < pivot.depth)
+			{
+				buffer[prior] = blocks[i];
+				prior++;
+			}
+			printBlocks(buffer);
+			if (blocks[i].depth > pivot.depth)
+			{
+				buffer[pivotindex + after] = blocks[i];
+				after++;
+			}
+		}
+
+
+		
+		//String nullstring = null;
+
+		System.out.println("Buffer: ");
+		printBlocks(buffer);
+
+
+
+		if (isSorted(buffer)) return buffer;
+
+		Block[] joined = new Block[blocks.length];
+
+		joined[pivotindex] = pivot;
+
+		Block[] firstpart = quickSortBlocks(Arrays.copyOfRange(buffer, 0, pivotindex));
+		Block[] secondpart = quickSortBlocks(Arrays.copyOfRange(buffer, pivotindex + 1, blocks.length));
+
+		for (int i = 0; i < firstpart.length; i++) 
+		{
+			joined[i] = firstpart[i];
+		}
+
+		for (int i = 0; i < secondpart.length; i++) 
+		{
+			joined[pivotindex + i + 1] = secondpart[i];
+		}
+
+		return joined;
+		//return blocks;
+
+	}*/
+
+	public static Block[] quickSortBlocks(Block[] blocks)
+	{
+		//System.out.println("Received: ");
+		//printBlocks(blocks);
+		if (blocks.length == 1) return blocks;
+		if (blocks.length == 2)
+		{
+			if (isSorted(blocks)) return blocks;
+			return reverse(blocks);
+		}
+
+		int pivotindex = 0, prior = 0, after = 0;
+		Block pivot = null;
+
+		if (blocks.length % 2 == 0)
+		{
+			pivotindex = (blocks.length/2) - 1;
+			pivot = blocks[pivotindex];
+		}
+		else
+		{
+			pivotindex = (blocks.length-1)/2;
+			pivot = blocks[pivotindex];
+		}
+		//System.out.print("Pivot: ");
+		//System.out.println(pivot.depth);
+
+
+		Block[] buffer = new Block[blocks.length];
+
+		//buffer[pivotindex] = 
+		for (int i = 0; i < blocks.length; i++) 
+		{
+			if (blocks[i].depth < pivot.depth)
+			{
+				buffer[prior] = blocks[i];
+				prior++;
+			}
+		}
+		buffer[prior] = pivot;
+		pivotindex = prior;
+		prior++;
+		for (int i = 0; i < blocks.length; i++) 
+		{
+			if (blocks[i].depth > pivot.depth)
+			{
+				buffer[prior] = blocks[i];
+				prior++;
+			}
+		}
+
+		//printBlocks(buffer);
+		//System.out.println(pivotindex);
+
+
+		if (isSorted(buffer)) return buffer;
+
+		Block[] firstpart = quickSortBlocks(Arrays.copyOfRange(buffer, 0, pivotindex));
+		Block[] secondpart = quickSortBlocks(Arrays.copyOfRange(buffer, pivotindex + 1, buffer.length));
+
+
+		for (int i = 0; i < firstpart.length; i++) 
+		{
+			buffer[i] = firstpart[i];
+		}
+		for (int i = 0; i < secondpart.length; i++) 
+		{
+			buffer[firstpart.length + i] = secondpart[i];
+		}
+
+
+		return buffer;
+	}
+
+	void sortBlocks()
+	{
+		//Frame buff = new Frame(100);
+
 	}
 
 

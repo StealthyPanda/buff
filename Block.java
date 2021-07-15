@@ -16,5 +16,10 @@ public class Block
 		this.normalangle = normalangle;
 	}
 
+	public Block(double depth)//testing purposes only
+	{
+		this.depth = depth;
+	}
+
 }
 
