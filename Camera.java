@@ -12,9 +12,9 @@ public class Camera
 	public World targetworld;
 	public Shell[] rendergroup;
 	public volatile Plane sensor;
-	public float sensorwidth = 16, sensorheight = 9, sensordistance = 0.2f;
+	public double sensorwidth = 16, sensorheight = 9, sensordistance = 0.2;
 	public Vector3 localx, localy;
-	public float kvalue = 0.1f;
+	public double kvalue = 0.1f;
 	public volatile Frame frame;
 	public Vector3 sunlight;
 	public String renderpath = "C:\\Seema_Sep_20\\OneDrive\\Desktop\\touseef\\renderingthing\\";
@@ -209,11 +209,15 @@ public class Camera
 		double localycoord;
 		Vector3 intersection;
 
+		//System.out.print("length: ");
+		//System.out.println(face.vertices.length);
+
 		for (int i = 0; i < face.vertices.length; i++) 
 		{
-			ray = new Ray(face.vertices[i], this.position);
+			ray = new Ray(this.position, face.vertices[i]);
 			intersection = ray.getIntersection(this.sensor);
-
+			//System.out.print("intersection: ");
+			//System.out.println(intersection);
 			if (intersection == null) continue;
 
 			localxcoord = Vector3.dotproduct(intersection, localx);
@@ -243,12 +247,17 @@ public class Camera
 		this.rendergroup = targetworld.rendergroup;
 	}
 
+	void sortBlocks();
+	{
+		//todo: Frame buff = new Frame(100);
+	}
+
 
 	public void project()
 	{
 		updateRendergroup();
 		//System.out.print("No. of rendergroup Objects: "); System.out.println(rendergroup.length);
-
+		this.frame = new Frame(100);
 		for (int i = 0; i < rendergroup.length; i++) 
 		{
 			//System.out.println("Buh here tho");
@@ -272,9 +281,11 @@ public class Camera
 			}
 			
 		}
+
+		sortBlocks();
 	}
 
-
+	Sketcher sketcher;
 
 	public void captureFrame()
 	{
@@ -283,16 +294,45 @@ public class Camera
 
 		JFrame viewer = new JFrame("Hope");
 
-		viewer.setSize(1600, 900);
+		viewer.setSize(800, 450);
 
-		Sketcher sketcher = new Sketcher(this.frame, this.renderpath);
+		System.out.println(sensorwidth * kvalue);
 
-		sketcher.setSize(1600, 900);
+		sketcher = new Sketcher(this.frame, this.renderpath, sensorwidth * kvalue, sensorheight * kvalue, this);
+
+		sketcher.setSize(800, 450);
 
 		viewer.add(sketcher);
 
 		viewer.setVisible(true);
 
+		/*System.out.println(this.frame.index);
+		for (int i = 0; i < this.frame.index; i++) 
+		{
+			System.out.println(this.frame.blocks[i]);
+			System.out.println(this.frame.blocks[i].projectedvertexcoordinates.length);
+			for (int j = 0 ; j < this.frame.blocks[i].projectedvertexcoordinates.length; j++) 
+			{
+				System.out.println(this.frame.blocks[i].projectedvertexcoordinates[j]);
+			}
+		}
+		for (int i = 0; i < this.frame.index; i++) 
+		{
+			for (int j = 0; j < this.frame.blocks[i].projectedvertexcoordinates.length; j++) 
+			{
+				System.out.print(this.frame.blocks[i].projectedvertexcoordinates[j][0]);
+				System.out.print(" ");
+				System.out.println(this.frame.blocks[i].projectedvertexcoordinates[j][1]);
+			}
+		}*/
+
+	}
+
+	public void recapture()
+	{
+		project();
+		sketcher.update();
+		sketcher.repaint();
 	}
 }
 
@@ -302,10 +342,28 @@ class Sketcher extends Canvas
 
 	Frame frame;
 	String renderpath;
+	double width, height;
+	double scalar = 10;
+	Camera camera;
+	//World world;
 
-	public Sketcher(Frame frame, String renderpath)
+	public Sketcher(Frame frame, String renderpath, double width, double height, Camera camera)
 	{
 		this.frame = frame;
+		this.width = width;
+		this.height = height;
+		this.renderpath = renderpath;
+		this.camera = camera;
+	}
+
+	public void update()
+	{
+		//System.out.println(camera);
+		this.frame = camera.frame;
+		this.width = camera.sensorwidth * camera.kvalue;
+		this.height = camera.sensorheight * camera.kvalue;
+		this.renderpath = camera.renderpath;
+		this.frame = camera.frame;
 	}
 
 	public void paint(Graphics g)
@@ -319,13 +377,24 @@ class Sketcher extends Canvas
 		{
 			if (frame.blocks[i] == null) continue;
 			Block block = frame.blocks[i];
+			g2.setPaint(new Color(0, 0, 0));
+			//System.out.print(block.material.r);
+			//	System.out.print(" ");
+			//System.out.print(block.material.g);
+			//	System.out.print(" ");
+			//System.out.println(block.material.b);
 			double[][] coordinates = block.projectedvertexcoordinates;
 			GeneralPath polygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD, coordinates.length);
-			polygon.moveTo(coordinates[0][0], coordinates[0][1]);
+			polygon.moveTo(Math.round((coordinates[0][0]/width) * 800 * scalar), Math.round((coordinates[0][1]/height) * 450 * scalar));
 
 			for (int j = 1; j < coordinates.length; j++) 
 			{
-				polygon.lineTo(coordinates[j][0], coordinates[j][1]);
+				//System.out.print(Math.round((coordinates[j][0]/width) * 800 * scalar));
+				//System.out.print(" ");
+				//System.out.print(width);
+				//System.out.print(" ");
+				//System.out.println(Math.round((coordinates[j][0]/width) * 450 * scalar));
+				polygon.lineTo(Math.round((coordinates[j][0]/width) * 800 * scalar), Math.round((coordinates[j][1]/height) * 450 * scalar));
 			}
 
 			polygon.closePath();
@@ -333,7 +402,6 @@ class Sketcher extends Canvas
 			g2.draw(polygon);
 
 			g2.setPaint(new Color(block.material.r, block.material.g, block.material.b));
-
 			g2.fill(polygon);
 
 		}
