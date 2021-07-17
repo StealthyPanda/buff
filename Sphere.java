@@ -124,32 +124,95 @@ public class Sphere extends Shell
 {
 
 	public double radius;
+	public int latitudes, longitudes;
 
-	public Sphere()
+	
+	public Sphere(double radius, int latitudes, int longitudes)
 	{
-		radius = 1;
-		position = new Vector3();
-		orientation = new Quaternion(1, 0, 0, 0);
+		this.position = new Vector3();
+		this.radius = radius;
+		this.orientation = new Quaternion(1, 0, 0, 0);
+		populateVertices();
 	}
 
-	public Sphere(Vector3 position, double radius)
+	public Sphere(double radius, int latitudes, int longitudes, Vector3 position)
 	{
+		this.latitudes = latitudes;
+		this.longitudes = longitudes;
 		this.position = position;
 		this.radius = radius;
 		this.orientation = new Quaternion(1, 0, 0, 0);
+		populateVertices();
 	}
 
-	public Sphere(Vector3 position, double radius, Quaternion orientation)
+	public Sphere(double radius, int latitudes, int longitudes, Vector3 position, Quaternion orientation)
 	{
+		this.latitudes = latitudes;
+		this.longitudes = longitudes;
 		this.position = position;
 		this.radius = radius;
 		this.orientation = orientation;
+		populateVertices();
 	}
 
-	void populatevertices()
+	
+	void populateVertices()
 	{
+		Vector3 yaxis = new Vector3(0, 1, 0);
+		Vector3 zaxis = new Vector3(0, 0, 1);
 
 
+
+		Vector3 pointer = new Vector3(0, 0, this.radius);
+		//buffer[0][0] = new Vector3(pointer); //north pole
+		//buffer[this.latitudes] = new Vector3(pointer.getMultiplied(-1)); //south pole
+		Vector3 northpole = new Vector3(pointer);
+		Vector3 southpole = new Vector3(pointer.getMultiplied(-1));
+
+		double yincrements = Math.PI/(this.latitudes + 1);
+		double zincrements = (2 * Math.PI)/(this.longitudes);
+
+
+		Vector3[][] buffer = new Vector3[this.latitudes + 2][this.longitudes];
+		buffer[0] = {northpole};
+		buffer[this.latitudes + 1] = {southpole};
+
+		pointer.rotate(yaxis, yincrements);
+		for (int i = 0 ; i < this.latitudes; i++) 
+		{
+			
+			for (int j = 0; j < this.longitudes; j++ ) 
+			{
+				
+				buffer[i + 1][j] = new Vector3(pointer);
+				pointer.rotate(zaxis, zincrements);
+
+			}
+
+			pointer.rotate(yaxis, yincrements);
+
+		}
+
+		//this.vertices = buffer;
+
+		//System.out.println(pointer);
+		int[][] buff = new int[(this.latitudes + 1) * this.longitudes][];
+
+		int counter = 0;
+		for (int i = 1; i < this.latitudes + 1; i++) 
+		{
+			for (int j = 0; j < this.longitudes; j++) 
+			{
+				if (i == 1)
+				{
+
+					buff[counter] = {}
+
+				}
+				counter++;
+			}
+			counter++;
+		}
 
 	}
 
