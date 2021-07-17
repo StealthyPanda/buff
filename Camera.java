@@ -25,7 +25,7 @@ public class Camera
 	public double kvalue = 0.1f;
 	public volatile Frame frame;
 	public Vector3 sunlight;
-	public String renderpath = "C:\\Seema_Sep_20\\OneDrive\\Desktop\\touseef\\renderingthing";
+	public String renderpath = "C:\\Users\\pc\\Desktop\\renderpath";
 
 	void initiateLocalAxes()
 	{
@@ -319,6 +319,7 @@ public class Camera
 	}
 
 	Sketcher sketcher;
+	int rcounter = 0;
 
 	public void captureFrame()
 	{
@@ -332,8 +333,18 @@ public class Camera
 		System.out.println(sensorwidth * kvalue);
 
 		sketcher = new Sketcher(this.frame, this.renderpath, sensorwidth * kvalue, sensorheight * kvalue, this);
+		sketcher.setSize(1600, 900);
 
-		sketcher.setSize(800, 450);
+
+		/*BufferedImage image = new BufferedImage(sketcher.getWidth(),sketcher.getHeight(),BufferedImage.TYPE_INT_RGB);
+
+		sketcher.printAll(image.createGraphics());
+
+		System.out.println("Exporting to: " + "C:\\Users\\pc\\Desktop\\renderpath\\" + Integer.toString(rcounter) + ".png");
+		try {ImageIO.write(image, "PNG", new File("C:\\Users\\pc\\Desktop\\renderpath\\" + Integer.toString(rcounter) + ".png"));}
+		catch (IOException e) {System.out.println("uwu");}*/
+
+
 
 		viewer.add(sketcher);
 
