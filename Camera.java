@@ -26,6 +26,8 @@ public class Camera
 	public volatile Frame frame;
 	public Vector3 sunlight;
 	public String renderpath = "C:\\Users\\pc\\Desktop\\renderpath";
+	public int blocklimit = 200;
+	public RenderedFrame renderedframe;
 
 	void initiateLocalAxes()
 	{
@@ -88,7 +90,7 @@ public class Camera
 		//this.rendergroup = this.targetworld.rendergroup;
 		sensor = generateSensor();
 		initiateLocalAxes();
-		this.frame = new Frame(100);
+		this.frame = new Frame(blocklimit);
 		this.sunlight = targetworld.light;
 	}
 
@@ -100,7 +102,7 @@ public class Camera
 		this.rendergroup = this.targetworld.rendergroup;
 		sensor = generateSensor();
 		initiateLocalAxes();
-		this.frame = new Frame(100);
+		this.frame = new Frame(blocklimit);
 		this.sunlight = targetworld.light;
 	}
 
@@ -112,7 +114,7 @@ public class Camera
 		this.rendergroup = this.targetworld.rendergroup;
 		sensor = generateSensor();
 		initiateLocalAxes();
-		this.frame = new Frame(100);
+		this.frame = new Frame(blocklimit);
 		this.sunlight = targetworld.light;
 	}
 
@@ -124,7 +126,7 @@ public class Camera
 		this.rendergroup = this.targetworld.rendergroup;
 		sensor = generateSensor();
 		initiateLocalAxes();
-		this.frame = new Frame(100);
+		this.frame = new Frame(blocklimit);
 		this.sunlight = targetworld.light;
 	}
 
@@ -167,7 +169,7 @@ public class Camera
 
 	
 
-	public void projectOnFrame(Plane face)
+	public void projectFaceOnSensor(Plane face)
 	{
 		Material material = face.material;
 		Vector3 sunlightvect = this.sunlight.getMultiplied(-1);
@@ -181,15 +183,14 @@ public class Camera
 		double localycoord;
 		Vector3 intersection;
 
-		//System.out.print("length: ");
-		//System.out.println(face.vertices.length);
+		
 
 		for (int i = 0; i < face.vertices.length; i++) 
 		{
 			ray = new Ray(this.position, face.vertices[i]);
+
 			intersection = ray.getIntersection(this.sensor);
-			//System.out.print("intersection: ");
-			//System.out.println(intersection);
+			
 			if (intersection == null) continue;
 
 			localxcoord = Vector3.dotproduct(intersection, localx);
@@ -283,26 +284,25 @@ public class Camera
 	}
 
 	
-
-	public void project()
+	//this one generates a complete frame
+	public void projectWorldOnSensor()
 	{
 		updateRendergroup();
-		//System.out.print("No. of rendergroup Objects: "); System.out.println(rendergroup.length);
-		this.frame = new Frame(100);
+
+		this.frame = new Frame(blocklimit);
+
 		for (int i = 0; i < rendergroup.length; i++) 
 		{
-			//System.out.println("Buh here tho");
-			//System.out.println(rendergroup[0]);
+			
 			if(rendergroup[i] == null) continue;
 			
 			for (int j = 0; j < rendergroup[i].faces.length; j++) 
 			{
-				//System.out.println("reacher dere");
 				if (rendergroup[i].faces[j] == null) continue;
 
 				try
 				{
-					projectOnFrame(rendergroup[i].getFace(rendergroup[i].faces[j]));
+					projectFaceOnSensor(rendergroup[i].getFace(rendergroup[i].faces[j]));
 				}
 				catch (NotCoplanarException e)
 				{
@@ -318,57 +318,22 @@ public class Camera
 		quickSortBlocks(this.frame.blocks);
 	}
 
-	Sketcher sketcher;
-	int rcounter = 0;
-
-	public void captureFrame()
+	//Sketcher sketcher;
+	
+	//this one generates a complete RenderedFrame by capturing rawframe
+	public RenderedFrame captureFrame(double width, double height)
 	{
 
-		project();
+		projectWorldOnSensor();
 
-		JFrame viewer = new JFrame("Hope");
+		this.renderedframe = new RenderedFrame(this.frame, this, width, height);
+		this.renderedframe.setSize((int) width, (int) height);
 
-		viewer.setSize(800, 450);
-
-		System.out.println(sensorwidth * kvalue);
-
-		sketcher = new Sketcher(this.frame, this.renderpath, sensorwidth * kvalue, sensorheight * kvalue, this);
-		sketcher.setSize(1600, 900);
-
-
-		/*BufferedImage image = new BufferedImage(sketcher.getWidth(),sketcher.getHeight(),BufferedImage.TYPE_INT_RGB);
-
-		sketcher.printAll(image.createGraphics());
-
-		System.out.println("Exporting to: " + "C:\\Users\\pc\\Desktop\\renderpath\\" + Integer.toString(rcounter) + ".png");
-		try {ImageIO.write(image, "PNG", new File("C:\\Users\\pc\\Desktop\\renderpath\\" + Integer.toString(rcounter) + ".png"));}
-		catch (IOException e) {System.out.println("uwu");}*/
-
-
-
-		viewer.add(sketcher);
-
-		viewer.setVisible(true);
-
-		
+		return this.renderedframe;
 
 	}
 
-	public void recapture()
-	{
-		project();
-		sketcher.update();
-		sketcher.repaint();
-	}
-
-	public void savepic(String filename)
-	{
-
-		String filepath = this.renderpath + "\\" + filename + ".png";
-
-		sketcher.savepic(filepath);
-
-	}
+	
 }
 
 
@@ -464,6 +429,8 @@ class Sketcher extends Canvas
 	}
 
 }
+
+
 
 
 class BlockComparor implements Comparator<Block>
