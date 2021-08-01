@@ -61,16 +61,16 @@ public class Plane
 
 	public double getArea()
 	{
-		double area = 0;
+		double areabuff = 0;
 
-		area += Vector3.mod(Vector3.crossproduct(Vector3.add(vertices[2], vertices[0].getMultiplied(-1)), Vector3.add(vertices[1], vertices[0].getMultiplied(-1))).getMagnitude()/2);
+		areabuff = Vector3.crossproduct( Vector3.add(vertices[1], vertices[0].getMultiplied(-1)) , Vector3.add(vertices[2], vertices[0].getMultiplied(-1)) ).getMagnitude()/2;
 
 		if (vertices.length == 4)
 		{
-			area += Vector3.mod(Vector3.crossproduct(Vector3.add(vertices[3], vertices[0].getMultiplied(-1)), Vector3.add(vertices[2], vertices[0].getMultiplied(-1))).getMagnitude()/2);
+			areabuff += Vector3.crossproduct( Vector3.add(vertices[2], vertices[0].getMultiplied(-1)) , Vector3.add(vertices[3], vertices[0].getMultiplied(-1)) ).getMagnitude()/2;
 		}
 
-		return area;
+		return areabuff;
 	}
 
 	public Plane getUnbounded()

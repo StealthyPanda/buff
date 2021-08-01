@@ -22,12 +22,13 @@ public class Camera
 	public volatile Plane sensor;
 	public double sensorwidth = 16, sensorheight = 9, sensordistance = 0.2;
 	public Vector3 localx, localy;
-	public double kvalue = 0.1f;
+	public double kvalue = 1f;
 	public volatile Frame frame;
 	public Vector3 sunlight;
 	public String renderpath = "C:\\Users\\pc\\Desktop\\renderpath";
 	public int blocklimit = 200;
 	public RenderedFrame renderedframe;
+	public String name = "0";
 
 	void initiateLocalAxes()
 	{
@@ -171,9 +172,13 @@ public class Camera
 
 	public void projectFaceOnSensor(Plane face)
 	{
+
+		localx.normalise();
+		localy.normalise();
+
 		Material material = face.material;
-		Vector3 sunlightvect = this.sunlight.getMultiplied(-1);
-		double normalangle = Vector3.angle(face.normal, sunlightvect);
+		//Vector3 sunlightvect = this.sunlight.getMultiplied(-1);
+		double normalangle = Vector3.angle(face.normal, sunlight.getMultiplied(-1));
 
 		double[][] projectedvertexcoordinates = new double[face.vertices.length][];
 		double depth = 0;
@@ -192,6 +197,9 @@ public class Camera
 			intersection = ray.getIntersection(this.sensor);
 			
 			if (intersection == null) continue;
+
+			//localxcoord = Vector3.dotproduct(Vector3.add(intersection, this.sensor.vertices[2].getMultiplied(-1)), localx.getMultiplied(1));
+			//localycoord = Vector3.dotproduct(Vector3.add(intersection, this.sensor.vertices[2].getMultiplied(-1)), localy.getMultiplied(-1));
 
 			localxcoord = Vector3.dotproduct(intersection, localx);
 			localycoord = Vector3.dotproduct(intersection, localy);
@@ -220,7 +228,7 @@ public class Camera
 		this.rendergroup = targetworld.rendergroup;
 	}
 
-	double getLowestDepthBlock(Block[] blocks)
+	double getLowestDepthOfBlocks(Block[] blocks)
 	{
 		double lowestdepth = 0;
 		for (int i = 0; i < blocks.length; i++) 
@@ -315,13 +323,12 @@ public class Camera
 
 		this.frame.blocks = Arrays.copyOfRange(this.frame.blocks, 0, this.frame.index);
 
-		quickSortBlocks(this.frame.blocks);
+		this.frame.blocks = quickSortBlocks(this.frame.blocks);
 	}
 
-	//Sketcher sketcher;
 	
 	//this one generates a complete RenderedFrame by capturing rawframe
-	public RenderedFrame captureFrame(double width, double height)
+	public RenderedFrame captureFrame(int width, int height)
 	{
 
 		projectWorldOnSensor();
@@ -333,101 +340,35 @@ public class Camera
 
 	}
 
+	public void display()
+	{
+		Display display = new Display(this, this.renderedframe);
+		display.enable();
+	}
+
 	
 }
 
-
-class Sketcher extends Canvas
+class Display
 {
-
-	Frame frame;
-	String renderpath;
-	double width, height;
-	double scalar = 10;
-	Camera camera;
-	//World world;
-
-	public Sketcher(Frame frame, String renderpath, double width, double height, Camera camera)
+	JFrame jf;
+	public Display(Camera cam, RenderedFrame rf)
 	{
-		this.frame = frame;
-		this.width = width;
-		this.height = height;
-		this.renderpath = renderpath;
-		this.camera = camera;
+		jf = new JFrame("Camera Display - " + cam.name);
+		jf.setLayout(null);
+		jf.setSize(rf.getWidth(), rf.getHeight());
+		jf.add(rf);
 	}
 
-	public void update()
+	public void enable()
 	{
-		//System.out.println(camera);
-		this.frame = camera.frame;
-		this.width = camera.sensorwidth * camera.kvalue;
-		this.height = camera.sensorheight * camera.kvalue;
-		this.renderpath = camera.renderpath;
-		this.frame = camera.frame;
+		jf.setVisible(true);
 	}
 
-	public void paint(Graphics g)
+	public void disable()
 	{
-		Graphics2D g2 = (Graphics2D) g;
-
-		setBackground(new Color(125, 220, 255));
-
-		//iterating over the blocks in frame
-		for (int i = 0; i < frame.index; i++) 
-		{
-			if (frame.blocks[i] == null) continue;
-			Block block = frame.blocks[i];
-			g2.setPaint(new Color(0, 0, 0));
-			//System.out.print(block.material.r);
-			//	System.out.print(" ");
-			//System.out.print(block.material.g);
-			//	System.out.print(" ");
-			//System.out.println(block.material.b);
-			double[][] coordinates = block.projectedvertexcoordinates;
-			GeneralPath polygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD, coordinates.length);
-			polygon.moveTo(Math.round((coordinates[0][0]/width) * 800 * scalar), Math.round((coordinates[0][1]/height) * 450 * scalar));
-
-			for (int j = 1; j < coordinates.length; j++) 
-			{
-				//System.out.print(Math.round((coordinates[j][0]/width) * 800 * scalar));
-				//System.out.print(" ");
-				//System.out.print(width);
-				//System.out.print(" ");
-				//System.out.println(Math.round((coordinates[j][0]/width) * 450 * scalar));
-				polygon.lineTo(Math.round((coordinates[j][0]/width) * 800 * scalar), Math.round((coordinates[j][1]/height) * 450 * scalar));
-			}
-
-			polygon.closePath();
-
-			g2.draw(polygon);
-
-			g2.setPaint(new Color(block.material.r, block.material.g, block.material.b));
-			g2.fill(polygon);
-
-		}
-
-
+		jf.setVisible(false);
 	}
-
-	public void savepic(String imageName)
-	{
-		BufferedImage image = new  BufferedImage(getWidth(), getHeight(),BufferedImage.TYPE_INT_RGB);
-	    Graphics2D graphics = image.createGraphics();
-	    paint(graphics);
-	    //graphics.dispose();
-	    FileOutputStream out;
-	    try {
-	        System.out.println("Exporting image: "+imageName);
-	        out = new FileOutputStream(imageName);
-	        ImageIO.write(image, "png", out);
-	        out.close();
-	    } catch (FileNotFoundException e) {
-	        e.printStackTrace();
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    } 
-	}
-
 }
 
 
